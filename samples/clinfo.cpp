@@ -143,27 +143,40 @@ static std::string getExecCapabilitiesDesc(cl_device_exec_capabilities execCaps)
     return desc;
 }
 
+static std::string getCommandQueuePropsDesc(cl_command_queue_properties props)
+{
+    std::string desc;
+    if ((props & CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE) != 0)
+        desc = "OutOfOrder";
+    if ((props & CL_QUEUE_PROFILING_ENABLE) != 0)
+    {
+        if (!desc.empty()) desc += ' ';
+        desc += "Profiling";
+    }
+    return desc;
+}
+
 int main(int argc, const char** argv)
 try
 {
-    std::vector<clpp::Platform> platforms = clpp::Platform::get();
+    const std::vector<clpp::Platform> platforms = clpp::Platform::get();
     
     for (cl_uint i = 0; i < platforms.size(); i++)
     {
         std::cout << "------------------------------------------------------------\n";
-        const clpp::Platform& p = platforms[i];
+        const clpp::Platform p = platforms[i];
         
         std::cout << "Platform name: " << p.getName() << "\n"
             "  Version: " << p.getVersion() << "\n"
             "  Profile: " << p.getProfile() << "\n"
             "  Vendor: " << p.getVendor() << "\n"
             "  Extensions: " << p.getExtensions() << "\n";
-        std::vector<clpp::Device> devices = p.getAllDevices();
+        const std::vector<clpp::Device> devices = p.getAllDevices();
         
         for (cl_uint j = 0; j < devices.size(); j++)
         {
             std::cout << "  ------------------------------------------------------------\n";
-            const clpp::Device& d = devices[j];
+            const clpp::Device d = devices[j];
             const cl_uint dimsNum = d.getMaxWorkItemDims();
             std::cout << "  Device name: " << d.getName() << "\n"
                     "    Type: " << getDeviceTypeDesc(d.getType()) << "\n"
@@ -275,10 +288,13 @@ try
 #endif
                 "    ExecCapabilities: " <<
                         getExecCapabilitiesDesc(d.getExecCapabilities()) << "\n"
-                "    QueueProperties: " << d.getQueueProperties() << "\n"
+                "    QueueProperties: " << getCommandQueuePropsDesc(
+                            d.getQueueProperties()) << "\n"
 #if __CLPP_CL_VERSION >= 200U
-                "    QueueOnHostProperties: " << d.getQueueOnHostProperties() << "\n"
-                "    QueueOnDeviceProperties: " << d.getQueueOnDeviceProperties() << "\n"
+                "    QueueOnHostProperties: " << getCommandQueuePropsDesc(
+                            d.getQueueOnHostProperties()) << "\n"
+                "    QueueOnDeviceProperties: " << getCommandQueuePropsDesc(
+                            d.getQueueOnDeviceProperties()) << "\n"
                 "    QueueOnDevicePreferredSize: " << d.getQueueOnDevicePreferredSize() << "\n"
                 "    QueueOnDeviceMaxSize: " << d.getQueueOnDeviceMaxSize() << "\n"
                 "    MaxOnDevicesQueues: " << d.getMaxOnDevicesQueues() << "\n"
