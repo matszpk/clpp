@@ -54,7 +54,7 @@ try
     
     clpp::Buffer abuf(context, CL_MEM_READ_ONLY, sizeof(float)*vectorSize);
     clpp::Buffer bbuf(context, CL_MEM_READ_ONLY, sizeof(float)*vectorSize);
-    clpp::Buffer cbuf(context, CL_MEM_READ_ONLY, sizeof(float)*vectorSize);
+    clpp::Buffer cbuf(context, CL_MEM_WRITE_ONLY, sizeof(float)*vectorSize);
     
     clpp::Program program(context, kernelCode);
     program.build(device);
