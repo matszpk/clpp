@@ -55,7 +55,7 @@ try
         std::string optArg;
         if (!arg.empty() && arg[0] == '-' && (arg[1] == 'P' || arg[1] == 'D' ||
             arg[1] == 'O'))
-        {
+        {   // get option argument
             if (arg.size() > 2)
                 optArg = arg.substr(2);
             else
@@ -70,7 +70,7 @@ try
             }
         }
         if (arg == "--platform" || arg == "--device" || arg == "--options")
-        {
+        {   // get long option argument
             if (i+1 >= argc)
             {
                 std::cerr << "No required argument for " << arg << std::endl;
@@ -86,7 +86,7 @@ try
             return 0;
         }
         else if (arg == "-?" || arg == "--help")
-        {
+        {   // help
             std::cout << "Usage: clcompiler [OPTIONS] FILE...\n"
             "\n"
             "Options:\n"
@@ -96,9 +96,10 @@ try
             " -O, --options COMPOPTS   set compiler options\n"
             " -?, --help               print this help\n";
             std::cout.flush();
+            return 0;
         }
         else if (arg.substr(0, 2) == "-P" || arg == "--platform")
-        {
+        {   // get platform number (in order list)
             std::istringstream iss(optArg);
             iss.exceptions(std::ios::failbit);
             try
@@ -110,7 +111,7 @@ try
             }
         }
         else if (arg.substr(0, 2) == "-D" || arg == "--device")
-        {
+        {   // get device number (in order list)
             std::istringstream iss(optArg);
             iss.exceptions(std::ios::failbit);
             try
@@ -122,9 +123,9 @@ try
             }
         }
         else if (arg.substr(0, 2) == "-O" || arg == "--options")
-            options = optArg;
+            options = optArg;   // build options
         else if (!arg.empty() && arg[0] == '-')
-        {
+        {   // unknown option
             std::cerr << "Unknown option: " << arg << std::endl;
             return 1;
         }
@@ -134,14 +135,14 @@ try
     
     const std::vector<clpp::Platform> platforms = clpp::Platform::get();
     if (platformNum >= platforms.size())
-    {
+    {   // if platform number out of range
         std::cerr << "Platform number out of range" << std::endl;
         return 1;
     }
     const clpp::Platform platform = platforms[platformNum];
     const std::vector<clpp::Device> devices = platform.getAllDevices();
     if (deviceNum >= devices.size())
-    {
+    {   // if device number out of range
         std::cerr << "Device number out of range" << std::endl;
         return 1;
     }
@@ -156,7 +157,7 @@ try
             const std::string& fileName = filesToCompile[i];
             
             std::cout << "Compiling " << fileName << "..." << std::endl;
-            
+            // determine output filename with .clo extension
             std::string outFileName = fileName;
             if (outFileName.size() >= 4 && outFileName.substr(outFileName.size()-3) == ".cl")
                 outFileName += "o";
@@ -164,24 +165,24 @@ try
                 outFileName += ".clo";
             
             std::string source;
-            {
+            {   // read source file
                 std::ifstream ifs(fileName.c_str(), std::ios::binary);
                 if (!ifs)
                 {
                     std::cerr << "Can't open input file " << fileName << std::endl;
                     return 1;
                 }
-                ifs.exceptions(std::ios::badbit);
+                ifs.exceptions(std::ios::badbit); // enable exception handling
                 while (true)
                 {
                     int c = ifs.get();
-                    if (ifs.eof()) break;
-                    source.push_back(c);
+                    if (ifs.eof()) break; // ends if end-of-file
+                    source.push_back(c); // push to source
                 }
             }
             
             clpp::Program program(context, source);
-            try
+            try // try to compile
             { program.build(device, options.c_str()); }
             catch(const clpp::Error& error)
             {
@@ -191,10 +192,10 @@ try
                 throw;
             }
             const std::string buildLog = program.getBuildLog(device);
-            if (!buildLog.empty())
+            if (!buildLog.empty())      // if build logs is not empty print them
                 std::cerr << "Source " << fileName << ":\n" << buildLog << std::endl;
             
-            {
+            {   // write output file
                 std::ofstream ofs(outFileName.c_str(), std::ios::binary);
                 if (!ofs)
                 {
@@ -204,6 +205,7 @@ try
                 ofs.exceptions(std::ios::badbit);
                 
                 std::vector<std::vector<unsigned char> > binaries = program.getBinaries();
+                // binaries
                 ofs.write(reinterpret_cast<const char*>(&(binaries[0][0])), binaries[0].size());
                 ofs.flush();
             }

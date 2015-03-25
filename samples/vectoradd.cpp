@@ -33,7 +33,7 @@ static const char* kernelCode =
 "    cvec[i] = avec[i] + bvec[i];\n"
 "}\n";
 
-static const size_t vectorSize =700;
+static const cl_uint vectorSize =700;
 
 static float randomFloat()
 {
@@ -43,33 +43,41 @@ static float randomFloat()
 int main(int argc, const char** argv)
 try
 {
+    // choose first platform
     const clpp::Platform platform = clpp::Platform::get()[0];
-    const clpp::Device device = platform.getGPUDevices()[0];
+    // choose first device from platform
+    const clpp::Device device = platform.getAllDevices()[0];
     const clpp::Context context(device);
     
     std::vector<float> avec(vectorSize);
     std::vector<float> bvec(vectorSize);
+    // generate random data
     std::generate(avec.begin(), avec.end(), randomFloat);
     std::generate(bvec.begin(), bvec.end(), randomFloat);
-    
+    // buffers for kernel
     clpp::Buffer abuf(context, CL_MEM_READ_ONLY, sizeof(float)*vectorSize);
     clpp::Buffer bbuf(context, CL_MEM_READ_ONLY, sizeof(float)*vectorSize);
     clpp::Buffer cbuf(context, CL_MEM_WRITE_ONLY, sizeof(float)*vectorSize);
     
     clpp::Program program(context, kernelCode);
     program.build(device);
+    // kernel vectorAdd
     clpp::Kernel kernel(program, "vectorAdd");
-    kernel.setArgs(cl_uint(vectorSize), abuf, bbuf, cbuf);
+    // set arguments: n, avec, bvec, cvec
+    kernel.setArgs(vectorSize, abuf, bbuf, cbuf);
     
     clpp::CommandQueue cmdQueue(context, device);
+    // copy data to buffers (&avec[0] - start address of vector)
     cmdQueue.writeBuffer(abuf, 0, sizeof(float)*vectorSize, &avec[0]);
     cmdQueue.writeBuffer(bbuf, 0, sizeof(float)*vectorSize, &bvec[0]);
     
     const size_t workGroupSize = kernel.getWorkGroupSize(device);
     const size_t alignedSize = ((vectorSize+workGroupSize-1)/workGroupSize)*workGroupSize;
+    // enqueue kernel call and wait for its event
     cmdQueue.enqueueNDRangeKernel(kernel, alignedSize, workGroupSize).wait();
     
     std::vector<float> cvec(vectorSize);
+    // copy data from output buffer
     cmdQueue.readBuffer(cbuf, 0, sizeof(float)*vectorSize, &cvec[0]);
     for (size_t i = 0; i < vectorSize; i++)
         std::cout << i << ": " << cvec[i] << "\n";
