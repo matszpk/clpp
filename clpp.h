@@ -1342,7 +1342,7 @@ public:
     { return getInfo<cl_uint>(CL_DEVICE_MEM_BASE_ADDR_ALIGN); }
     
     /// get minimum data type alignment size in bytes (deprecated in OpenCL >= 1.2)
-    cl_uint getMinDataTypeAlignSize() const __CLPP_CL_1_2_DEPRECATED
+     __CLPP_CL_1_2_DEPRECATED cl_uint getMinDataTypeAlignSize() const
     { return getInfo<cl_uint>(CL_DEVICE_MIN_DATA_TYPE_ALIGN_SIZE); }
     
     /// get maximum samplers that can be used by kernel
@@ -1415,7 +1415,7 @@ public:
     { return getInfo<cl_bool>(CL_DEVICE_ERROR_CORRECTION_SUPPORT); }
 #if __CLPP_CL_VERSION >= 101U
     /// check whether device supports host unified memory (defined only if OpenCL >= 1.1) (deprecated in OpenCL >= 2.0)
-    bool isHostUnifiedMemory() const __CLPP_CL_2_0_DEPRECATED
+     __CLPP_CL_2_0_DEPRECATED bool isHostUnifiedMemory() const
     { return getInfo<cl_bool>(CL_DEVICE_HOST_UNIFIED_MEMORY); }
 #endif
     
@@ -1446,7 +1446,7 @@ public:
     { return getInfo<cl_device_exec_capabilities>(CL_DEVICE_EXECUTION_CAPABILITIES); }
     
     /// get supported queue properties (deprecated in OpenCL >= 2.0)
-    cl_command_queue_properties getQueueProperties() const __CLPP_CL_2_0_DEPRECATED
+     __CLPP_CL_2_0_DEPRECATED cl_command_queue_properties getQueueProperties() const
     { return getInfo<cl_command_queue_properties>(CL_DEVICE_QUEUE_PROPERTIES); }
     
 #if __CLPP_CL_VERSION >= 200U
@@ -3007,7 +3007,7 @@ public:
     { return getImageInfo<size_t>(CL_IMAGE_ARRAY_SIZE); }
     
     /// get image buffer (defined if only OpenCL >= 1.2) (deprecated if OpenCL >= 2.0)
-    Buffer getBuffer() const __CLPP_CL_2_0_DEPRECATED
+     __CLPP_CL_2_0_DEPRECATED Buffer getBuffer() const
     { return getImageInfo<Buffer>(CL_IMAGE_BUFFER); }
     
     /// get image number of mip levels (defined if only OpenCL >= 1.2)
@@ -5816,8 +5816,8 @@ public:
 #if __CLPP_CL_ABI_VERSION <= 100U || (defined(CL_USE_DEPRECATED_OPENCL_1_0_APIS) && \
             __CLPP_CL_ABI_VERSION == 101U)
     /// set command queue properties (defined only if OpenCL ABI <= 1.0)
-    cl_command_queue_properties setProperty(cl_command_queue_properties properties,
-                        bool enable) const __CLPP_CL_1_1_DEPRECATED
+     __CLPP_CL_1_1_DEPRECATED cl_command_queue_properties setProperty(
+                cl_command_queue_properties properties, bool enable) const
     {
         cl_command_queue_properties outProps;
         const cl_int error = clSetCommandQueueProperty(queue, properties, enable, &outProps);
@@ -6653,8 +6653,8 @@ public:
     
 #if __CLPP_CL_ABI_VERSION <= 101U || defined(CL_USE_DEPRECATED_OPENCL_1_1_APIS)
     /// enqueue wait for events (and acts synchronization point) (deprecated in OpenCL 1.2)
-    void enqueueWaitForEvents(const std::vector<Event>& waitList = std::vector<Event>()) const
-            __CLPP_CL_1_2_DEPRECATED
+    __CLPP_CL_1_2_DEPRECATED void enqueueWaitForEvents(
+                const std::vector<Event>& waitList = std::vector<Event>()) const
     {
         const cl_int error = clEnqueueWaitForEvents(queue, waitList.size(),
                 reinterpret_cast<const cl_event*>(!waitList.empty()?&waitList[0]:NULL));
