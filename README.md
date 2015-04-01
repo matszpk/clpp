@@ -22,7 +22,7 @@ Make a building directory, run cmake and make:
     make
     ctest
 
-# Documentation
+## Documentation
 
 Run 'doxygen' in project directory. This will makes 'docs' directory that will contains
 documentation for library.
