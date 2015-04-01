@@ -251,6 +251,11 @@ typedef CL_API_ENTRY cl_event CL_API_CALL
 #endif
 
 /// main namespace for clpp
+/**
+ * This namespace holds any class or functions definitions that can be used by programmer.
+ * Almost classes represent an OpenCL object handles (for example, Device, Kernel, Program, etc).
+ * These classes automatically manages an underlying OpenCL handles by using references.
+ */
 namespace clpp
 {
 
@@ -1035,6 +1040,7 @@ inline std::vector<T> getGLContextInfoVector(const cl_context_properties* props,
 class Platform;
 
 /// OpenCL Device wrapper
+/** This class holds a OpenCL device handle. */
 class Device
 {
 private:
@@ -5629,6 +5635,18 @@ namespace impl
 #endif
 
 /// OpenCL CommandQueue object wrapper
+/** This class holds a OpenCL command queue. Programmer can enqueue command to queue by using
+ * enqueue* methods that returns an event that represents command. That event will be used later
+ * to wait for a command completion. Correctly written program should get events and wait
+ * for completion. Simplest usage is:
+ * 
+ * \code
+ * cmdQueue.enqueue...(....).wait();
+ * \endcode
+ * 
+ * Other methods for reading/writing/mapping without enqueue
+ * prefix executes an underlying commands in blocking mode and does not return an event.
+ */
 class CommandQueue
 {
 private:
@@ -7108,6 +7126,40 @@ public:
 };
 
 /// Buffer mapping holder
+/** If blocking is disabled object
+ * holds mapEvent that represents a mapping operation and constructor do not wait for
+ * complete this event. Otherwise constructor execute a blocking mapping.
+ * If unmapEventPtr is NULL then unmap command will be completed.
+ * Otherwise an unmapping command event will be saved in
+ * place that will be pointed by unmapEventPtr for later waiting.
+ * 
+ * Sample usage:
+ * \code
+ * {
+ *   BufferMapping mapping(cmdQueue, buffer, true, CL_MAP_READ, 0, xxx);
+ *   // mapping is ready
+ *   ....
+ *   // mapping has been automatically released
+ * }
+ * \endcode
+ * 
+ * or
+ * 
+ * \code
+ * Event unmapEvent;
+ * {
+ *   BufferMapping mapping(cmdQueue, buffer, false, CL_MAP_READ, 0, xxx, &unmapEvent);
+ *   ...
+ *   mapping.wait(); // wait for a mapping
+ *   // mapping is ready
+ *   ....
+ *   // mapping has been automatically released, but do not wait for an unmapping
+ * }
+ * ...
+ * // wait for an unmapping
+ * unmapEvent.wait(); 
+ * \endcode
+ */
 class BufferMapping: public MemoryMapping
 {
 public:
@@ -7148,6 +7200,40 @@ public:
 };
 
 /// image mapping holder class
+/** If blocking is disabled object
+ * holds mapEvent that represents a mapping operation and constructor do not wait for
+ * complete this event. Otherwise constructor execute a blocking mapping.
+ * If unmapEventPtr is NULL then unmap command will be completed.
+ * Otherwise an unmapping command event will be saved in
+ * place that will be pointed by unmapEventPtr for later waiting.
+ * 
+ * Sample usage:
+ * \code
+ * {
+ *   ImageMapping mapping(cmdQueue, image, true, CL_MAP_READ, Size3(0,0), ...);
+ *   // mapping is ready
+ *   ....
+ *   // mapping has been automatically released
+ * }
+ * \endcode
+ * 
+ * or
+ * 
+ * \code
+ * Event unmapEvent;
+ * {
+ *   ImageMapping mapping(cmdQueue, image, false, CL_MAP_READ, Size3(0,0), ..., &unmapEvent);
+ *   ...
+ *   mapping.wait(); // wait for a mapping
+ *   // mapping is ready
+ *   ....
+ *   // mapping has been automatically released, but do not wait for an unmapping
+ * }
+ * ...
+ * // wait for an unmapping
+ * unmapEvent.wait(); 
+ * \endcode
+ */
 class ImageMapping: public MemoryMapping
 {
 private:
@@ -7202,6 +7288,40 @@ public:
 
 #if __CLPP_CL_ABI_VERSION >= 200U
 /// SVM mapping holder class (defined only if OpenCL ABI >= 2.0)
+/** If blocking is disabled object
+ * holds mapEvent that represents a mapping operation and constructor do not wait for
+ * complete this event. Otherwise constructor execute a blocking mapping.
+ * If unmapEventPtr is NULL then unmap command will be completed.
+ * Otherwise an unmapping command event will be saved in
+ * place that will be pointed by unmapEventPtr for later waiting.
+ * 
+ * Sample usage:
+ * \code
+ * {
+ *   SVMMapping mapping(cmdQueue, buffer, true, CL_MAP_READ, svmPointer);
+ *   // mapping is ready
+ *   ....
+ *   // mapping has been automatically released
+ * }
+ * \endcode
+ * 
+ * or
+ * 
+ * \code
+ * Event unmapEvent;
+ * {
+ *   SVMMapping mapping(cmdQueue, buffer, false, CL_MAP_READ, svmPointer, xxx, &unmapEvent);
+ *   ...
+ *   mapping.wait(); // wait for a mapping
+ *   // mapping is ready
+ *   ....
+ *   // mapping has been automatically released, but do not wait for an unmapping
+ * }
+ * ...
+ * // wait for an unmapping
+ * unmapEvent.wait(); 
+ * \endcode
+ */
 class SVMMapping
 {
 private:
@@ -7284,6 +7404,39 @@ public:
 
 #if __CLPP_CL_GL
 /// GLObject Lock class (defined only if __CLPP_CL_GL)
+/** If releaseEventPtr is NULL then a release command will be completed.
+ * Otherwise an unmapping command event will be saved in
+ * place that will be pointed by unmapEventPtr for later waiting.
+ * 
+ * Sample usage:
+ * \code
+ * {
+ *   GLObjectsLock gllock(cmdQueue, texture);
+ *   ...
+ *   gllock.wait()
+ *   // lock is ready
+ *   ....
+ *   // lock has been automatically released
+ * }
+ * \endcode
+ * 
+ * or
+ * 
+ * \code
+ * Event releaseEvent;
+ * {
+ *   GLObjectsLock gllock(cmdQueue, texture, &releaseEvent);
+ *   ...
+ *   gllock.wait()
+ *   // lock is ready
+ *   ....
+ *   // lock has been automatically released, but do not wait for a releasing
+ * }
+ * ...
+ * // wait for a releasing
+ * releaseEvent.wait(); 
+ * \endcode
+ */
 class GLObjectsLock
 {
 private:
