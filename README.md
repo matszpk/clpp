@@ -18,9 +18,11 @@ Make a building directory, run cmake and make:
 
     mkdir build
     cd build
-    cmake ..
+    cmake ..      (or cmake .. -DBUILD_TESTS=ON for building tests)
     make
-    ctest
+    ctest   (if tests enabled)
+
+Some samples requires libpng library or SDL library. Tests requires SDL library.
 
 ## Documentation
 
