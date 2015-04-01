@@ -4,6 +4,7 @@ This library supports:
 
 * UNIX, Linux, Windows environment
 * C++, C++11 language standard
+* error handling by C++ exceptions
 * OpenCL 1.0, 1.1, 1.2, 2.0 (not fully tested)
 * OpenCL-OpenGL interoperability
 

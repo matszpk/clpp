@@ -5945,7 +5945,7 @@ public:
      * \param buffer buffer
      * \param bufferOrigin origin place in buffer
      * \param hostOrigin origin place in host data
-     * \param region region size
+     * \param region region size (last zeroes automatically replaces by ones)
      * \param bufferRowPitch size of row in buffer in bytes
      * \param bufferSlicePitch size of slice in buffer in bytes
      * \param hostRowPitch size of row in host data in bytes
@@ -5977,7 +5977,7 @@ public:
      * \param buffer buffer
      * \param bufferOrigin origin place in buffer
      * \param hostOrigin origin place in host data
-     * \param region region size
+     * \param region region size (last zeroes automatically replaces by ones)
      * \param bufferRowPitch size of row in buffer in bytes
      * \param bufferSlicePitch size of slice in buffer in bytes
      * \param hostRowPitch size of row in host data in bytes
@@ -6006,7 +6006,7 @@ public:
      * \param buffer buffer
      * \param bufferOrigin origin place in buffer
      * \param hostOrigin origin place in host data
-     * \param region region size
+     * \param region region size (last zeroes automatically replaces by ones)
      * \param bufferRowPitch size of row in buffer in bytes
      * \param bufferSlicePitch size of slice in buffer in bytes
      * \param hostRowPitch size of row in host data in bytes
@@ -6038,7 +6038,7 @@ public:
      * \param buffer buffer
      * \param bufferOrigin origin place in buffer
      * \param hostOrigin origin place in host data
-     * \param region region size
+     * \param region region size (last zeroes automatically replaces by ones)
      * \param bufferRowPitch size of row in buffer in bytes
      * \param bufferSlicePitch size of slice in buffer in bytes
      * \param hostRowPitch size of row in host data in bytes
@@ -6094,7 +6094,7 @@ public:
      * \param dstBuffer destination buffer
      * \param srcOrigin origin place in source buffer
      * \param dstOrigin origin place in destination buffer
-     * \param region region size to copy
+     * \param region region size to copy (last zeroes automatically replaces by ones)
      * \param srcRowPitch size of row in source buffer in bytes
      * \param srcSlicePitch size of slice in source buffer in bytes
      * \param dstRowPitch size of row in destination buffer in bytes
@@ -6216,7 +6216,7 @@ public:
     /**
      * \param image image
      * \param origin origin place in image
-     * \param region region to read
+     * \param region region to read (last zeroes automatically replaces by ones)
      * \param rowPitch row pitch in bytes
      * \param slicePitch slice pitch in bytes
      * \param ptr pointer to output data
@@ -6243,7 +6243,7 @@ public:
     /**
      * \param image image
      * \param origin origin place in image
-     * \param region region to read
+     * \param region region to read (last zeroes automatically replaces by ones)
      * \param rowPitch row pitch in bytes
      * \param slicePitch slice pitch in bytes
      * \param ptr pointer to output data
@@ -6266,7 +6266,7 @@ public:
     /**
      * \param image image
      * \param origin origin place in image
-     * \param region region to write
+     * \param region region to write (last zeroes automatically replaces by ones)
      * \param rowPitch row pitch in bytes
      * \param slicePitch slice pitch in bytes
      * \param ptr pointer to output data
@@ -6293,7 +6293,7 @@ public:
     /**
      * \param image image
      * \param origin origin place in image
-     * \param region region to write
+     * \param region region to write (last zeroes automatically replaces by ones)
      * \param rowPitch row pitch in bytes
      * \param slicePitch slice pitch in bytes
      * \param ptr pointer to output data
@@ -6318,7 +6318,7 @@ public:
      * \param dstImage destination image
      * \param srcOrigin origin place in source image
      * \param dstOrigin origin place in destination image
-     * \param region region to copy
+     * \param region region to copy (last zeroes automatically replaces by ones)
      * \param waitList waitlist of events
      * \return event of command
      */
@@ -6344,7 +6344,7 @@ public:
      * \param image image
      * \param color color to fill
      * \param origin origin place in image
-     * \param region region to fill
+     * \param region region to fill (last zeroes automatically replaces by ones)
      * \param waitList waitlist of events
      * \return event of command
      */
@@ -6369,7 +6369,7 @@ public:
      * \param srcImage source image
      * \param dstBuffer destination buffer
      * \param srcOrigin origin place in source image
-     * \param region region to copy
+     * \param region region to copy (last zeroes automatically replaces by ones)
      * \param dstOffset offset for destination buffer
      * \param waitList waitlist of events
      * \return event of command
@@ -6396,7 +6396,7 @@ public:
      * \param dstImage destination image
      * \param srcOffset offset for source buffer
      * \param dstOrigin origin place in destination image
-     * \param region region to copy
+     * \param region region to copy (last zeroes automatically replaces by ones)
      * \param waitList waitlist of events
      * \return event of command
      */
@@ -6422,7 +6422,7 @@ public:
      * \param image image
      * \param mapFlags flags for mapping
      * \param origin origin place in image
-     * \param region region to map
+     * \param region region to map (last zeroes automatically replaces by ones)
      * \param imageRowPitch image row pitch in bytes
      * \param imageSlicePitch image row pitch in bytes
      * \param waitList waitlist of events
@@ -6450,7 +6450,7 @@ public:
      * \param image image
      * \param mapFlags flags for mapping
      * \param origin origin place in image
-     * \param region region to map
+     * \param region region to map (last zeroes automatically replaces by ones)
      * \param imageRowPitch image row pitch in bytes
      * \param imageSlicePitch image row pitch in bytes
      * \param waitList waitlist of events
@@ -6478,7 +6478,7 @@ public:
      * \param image image
      * \param mapFlags flags for mapping
      * \param origin origin place in image
-     * \param region region to map
+     * \param region region to map (last zeroes automatically replaces by ones)
      * \param imageRowPitch image row pitch in bytes
      * \param waitList waitlist of events
      * \return event of command
@@ -6500,12 +6500,12 @@ public:
         return event;
     }
     
-    /// map image
+    /// map 2D image
     /**
      * \param image image
      * \param mapFlags flags for mapping
      * \param origin origin place in image
-     * \param region region to map
+     * \param region region to map (last zeroes automatically replaces by ones)
      * \param imageRowPitch image row pitch in bytes
      * \param waitList waitlist of events
      * \return pointer to mapped region
@@ -7247,7 +7247,7 @@ public:
      * \param blocking blocking mode
      * \param mapFlags map flags
      * \param origin origin place in image
-     * \param region region to map
+     * \param region region to map (last zeroes automatically replaces by ones)
      * \param unmapEventPtr event pointer to event to an unmapping command
      */
     ImageMapping(const CommandQueue& cmdQueue, const Image& image,
