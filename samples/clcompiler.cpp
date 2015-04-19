@@ -43,8 +43,8 @@ int main(int argc, const char** argv)
 try
 {
     std::string options;
-    cl_uint platformNum;
-    cl_uint deviceNum;
+    cl_uint platformNum = 0;
+    cl_uint deviceNum = 0;
     
     std::vector<std::string> filesToCompile;
     
