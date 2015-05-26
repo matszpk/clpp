@@ -4260,7 +4260,7 @@ public:
      * \param userData userData for callback
      */
     void build(const char* options = NULL,
-               ProgramNotifyCallback notify = NULL, void* userData = NULL)
+               ProgramNotifyCallback notify = NULL, void* userData = NULL) const
     {
         const cl_int error = clBuildProgram(program, 0, NULL, options, notify, userData);
         if (error != CL_SUCCESS)
@@ -4276,7 +4276,7 @@ public:
      * \param userData userData for callback
      */
     void build(const Device& device, const char* options = NULL,
-               ProgramNotifyCallback notify = NULL, void* userData = NULL)
+               ProgramNotifyCallback notify = NULL, void* userData = NULL) const
     { 
         const cl_int error = clBuildProgram(program, 1,
                 reinterpret_cast<const cl_device_id*>(&device), options, notify, userData);
@@ -4286,7 +4286,7 @@ public:
     
     /// build program
     void build(const std::vector<Device>& devices, const char* options = NULL,
-               ProgramNotifyCallback notify = NULL, void* userData = NULL)
+               ProgramNotifyCallback notify = NULL, void* userData = NULL) const
     {
         const cl_int error = clBuildProgram(program, devices.size(),
                 (!devices.empty())?reinterpret_cast<const cl_device_id*>(&devices[0]):NULL,
@@ -4304,7 +4304,7 @@ public:
      * \param userData userData for callback
      */
     void compile(const char* options = NULL, ProgramNotifyCallback notify = NULL,
-                 void* userData = NULL)
+                 void* userData = NULL) const
     {
         const cl_int error = clCompileProgram(program, 0, NULL, options,
                 0, NULL, NULL, notify, userData);
@@ -4321,7 +4321,7 @@ public:
      * \param userData userData for callback
      */
     void compile(const Device& device, const char* options = NULL,
-               ProgramNotifyCallback notify = NULL, void* userData = NULL)
+               ProgramNotifyCallback notify = NULL, void* userData = NULL) const
     {
         const cl_int error = clCompileProgram(program, 1,
                 reinterpret_cast<const cl_device_id*>(&device), options,
@@ -4334,7 +4334,7 @@ public:
     /** compile program. if notify is not NULL this method may returns immediately and
      * will notifies about compilation finish by calling notification callback. */
     void compile(const std::vector<Device>& devices, const char* options = NULL,
-               ProgramNotifyCallback notify = NULL, void* userData = NULL)
+               ProgramNotifyCallback notify = NULL, void* userData = NULL) const
     {
         const cl_int error = clCompileProgram(program, devices.size(),
                 (!devices.empty())?reinterpret_cast<const cl_device_id*>(&devices[0]):NULL,
@@ -4349,7 +4349,7 @@ public:
     void compile(const std::vector<Program>& headers,
                const std::vector<const char*>& headerNames,
                const char* options = NULL, ProgramNotifyCallback notify = NULL,
-               void* userData = NULL)
+               void* userData = NULL) const
     { compile(std::vector<Device>(), headers, headerNames, options, notify, userData); }
     
     /// compile program (defined only if OpenCL ABI >= 1.2)
@@ -4358,7 +4358,7 @@ public:
     void compile(const Device& device, const std::vector<Program>& headers,
                const std::vector<const char*>& headerNames,
                const char* options = NULL, ProgramNotifyCallback notify = NULL,
-               void* userData = NULL)
+               void* userData = NULL) const
     {
         const cl_int error = clCompileProgram(program, 1,
                 reinterpret_cast<const cl_device_id*>(&device), options,
@@ -4381,7 +4381,7 @@ public:
     void compile(const std::vector<Device>& devices, const std::vector<Program>& headers,
                const std::vector<const char*>& headerNames,
                const char* options = NULL, ProgramNotifyCallback notify = NULL,
-               void* userData = NULL)
+               void* userData = NULL) const
     {
         const cl_int error = clCompileProgram(program, devices.size(),
                 (!devices.empty())?reinterpret_cast<const cl_device_id*>(&devices[0]):NULL,
