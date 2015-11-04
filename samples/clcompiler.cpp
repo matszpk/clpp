@@ -118,7 +118,7 @@ try
             { iss >> deviceNum; }
             catch(const std::exception& ex)
             {
-                std::cerr << "Can't parse platform number" << std::endl;
+                std::cerr << "Can't parse device number" << std::endl;
                 return 1;
             }
         }
