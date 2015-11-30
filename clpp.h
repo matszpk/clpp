@@ -25,23 +25,29 @@
 
 #if __CLPP_CL_ABI_VERSION==100
 #   define CL_USE_DEPRECATED_OPENCL_2_0_APIS 1
+#   define CL_USE_DEPRECATED_OPENCL_1_2_APIS 1
 #   define CL_USE_DEPRECATED_OPENCL_1_1_APIS 1
 #   define CL_USE_DEPRECATED_OPENCL_1_0_APIS 1
 #endif
 #if __CLPP_CL_ABI_VERSION==101
 #   define CL_USE_DEPRECATED_OPENCL_2_0_APIS 1
+#   define CL_USE_DEPRECATED_OPENCL_1_2_APIS 1
 #   define CL_USE_DEPRECATED_OPENCL_1_1_APIS 1
 #endif
 #if __CLPP_CL_ABI_VERSION==102
+#   define CL_USE_DEPRECATED_OPENCL_2_0_APIS 1
+#   define CL_USE_DEPRECATED_OPENCL_1_2_APIS 1
+#endif
+#if __CLPP_CL_ABI_VERSION==200
 #   define CL_USE_DEPRECATED_OPENCL_2_0_APIS 1
 #endif
 
 /// clpp major version number
 #define __CLPP_MAJOR_VERSION 0
 /// clpp minor version number
-#define __CLPP_MINOR_VERSION 1
+#define __CLPP_MINOR_VERSION 2
 /// clpp version string
-#define __CLPP_VERSION_STRING "0.1"
+#define __CLPP_VERSION_STRING "0.2"
 
 #include <cstdio>
 #include <exception>
@@ -71,18 +77,6 @@
 #undef max
 #endif
 
-#if defined(CL_VERSION_2_0) && __CLPP_CL_ABI_VERSION==100
-extern "C"
-{
-extern CL_API_ENTRY cl_int CL_API_CALL
-clSetCommandQueueProperty(cl_command_queue              /* command_queue */,
-                cl_command_queue_properties   /* properties */, 
-                cl_bool                        /* enable */,
-                cl_command_queue_properties * /* old_properties */)
-                CL_API_SUFFIX__VERSION_1_0;
-};
-#endif
-
 // only for generating Doxygen documentation
 #ifdef __CLPP_DOXYGEN
     /// determines what OpenCL version standard will be used.
@@ -109,7 +103,27 @@ clSetCommandQueueProperty(cl_command_queue              /* command_queue */,
     #define __CLPP_CL_GL_EXT
 #endif
 
-#if defined(CL_VERSION_2_0)
+#ifndef __CLPP_CL_ABI_VERSION
+#    define __CLPP_CL_ABI_VERSION __CLPP_CL_VERSION
+#endif
+
+#if (defined(CL_VERSION_2_0) || defined(CL_VERSION_1_2)) && __CLPP_CL_ABI_VERSION==100
+extern "C"
+{
+extern CL_API_ENTRY cl_int CL_API_CALL
+clSetCommandQueueProperty(cl_command_queue              /* command_queue */,
+                cl_command_queue_properties   /* properties */, 
+                cl_bool                        /* enable */,
+                cl_command_queue_properties * /* old_properties */)
+                CL_API_SUFFIX__VERSION_1_0;
+};
+#endif
+
+#if defined(CL_VERSION_2_1)
+#    if (!defined(__CLPP_CL_ABI_VERSION) || __CLPP_CL_ABI_VERSION>201)
+#       define __CLPP_CL_ABI_VERSION (201U)
+#    endif
+#elif defined(CL_VERSION_2_0)
 #    if (!defined(__CLPP_CL_ABI_VERSION) || __CLPP_CL_ABI_VERSION>200)
 #       define __CLPP_CL_ABI_VERSION (200U)
 #    endif
@@ -127,7 +141,11 @@ clSetCommandQueueProperty(cl_command_queue              /* command_queue */,
 #    endif
 #endif
 
-#if defined(CL_VERSION_2_0)
+#if defined(CL_VERSION_2_1)
+#    if (!defined(__CLPP_CL_VERSION) || __CLPP_CL_VERSION>201)
+#       define __CLPP_CL_VERSION (201U)
+#    endif
+#elif defined(CL_VERSION_2_0)
 #    if (!defined(__CLPP_CL_VERSION) || __CLPP_CL_VERSION>200)
 #       define __CLPP_CL_VERSION (200U)
 #    endif
@@ -195,7 +213,17 @@ clSetCommandQueueProperty(cl_command_queue              /* command_queue */,
 #    define __CLPP_DEPRECATED
 #endif
 
-#if __CLPP_CL_VERSION>=200 && !defined(CL_USE_DEPRECATED_OPENCL_2_0_APIS)
+#if __CLPP_CL_VERSION>=201 && \
+        (!defined(CL_USE_DEPRECATED_OPENCL_2_0_APIS) || !defined(CL_VERSION_2_1))
+/// deprecated macro for deprecated features in OpenCL 2.1 standard
+#    define __CLPP_CL_2_1_DEPRECATED __CLPP_DEPRECATED
+#else
+/// deprecated macro for deprecated features in OpenCL 2.1 standard
+#    define __CLPP_CL_2_1_DEPRECATED
+#endif
+#if __CLPP_CL_VERSION>=200 && \
+        (!defined(CL_USE_DEPRECATED_OPENCL_2_0_APIS) || defined(CL_VERSION_2_1)) && \
+        (!defined(CL_USE_DEPRECATED_OPENCL_1_2_APIS) || !defined(CL_VERSION_2_1))
 /// deprecated macro for deprecated features in OpenCL 2.0 standard
 #    define __CLPP_CL_2_0_DEPRECATED __CLPP_DEPRECATED
 #else
@@ -217,7 +245,17 @@ clSetCommandQueueProperty(cl_command_queue              /* command_queue */,
 #    define __CLPP_CL_1_1_DEPRECATED
 #endif
 
-#if __CLPP_CL_ABI_VERSION>=200 && !defined(CL_USE_DEPRECATED_OPENCL_2_0_APIS)
+#if __CLPP_CL_ABI_VERSION>=201 && \
+        (!defined(CL_USE_DEPRECATED_OPENCL_2_0_APIS) || !defined(CL_VERSION_2_1))
+/// deprecated macro for deprecated functions in OpenCL 2.1 standard
+#    define __CLPP_CL_ABI_2_1_DEPRECATED __CLPP_DEPRECATED
+#else
+/// deprecated macro for deprecated functions in OpenCL 2.1 standard
+#    define __CLPP_CL_ABI_2_1_DEPRECATED
+#endif
+#if __CLPP_CL_ABI_VERSION>=200 && \
+        (!defined(CL_USE_DEPRECATED_OPENCL_2_0_APIS) || defined(CL_VERSION_2_1)) && \
+        (!defined(CL_USE_DEPRECATED_OPENCL_1_2_APIS) || !defined(CL_VERSION_2_1))
 /// deprecated macro for deprecated functions in OpenCL 2.0 standard
 #    define __CLPP_CL_ABI_2_0_DEPRECATED __CLPP_DEPRECATED
 #else
@@ -666,6 +704,7 @@ namespace impl
         KERNOPT_KERNEL = 0,
         KERNOPT_WORKGROUP,
         KERNOPT_ARG,
+        KERNOPT_SUBGROUP,
         EVOPT_EVENT = 0,
         EVOPT_PROFILING,
         CMDQOPT_CMDQUEUE = 0,
@@ -826,6 +865,34 @@ namespace impl
                         size, infoRet, sizeRet);
         if (error != CL_SUCCESS)
             throw Error(error, "clGetKernelArgInfo");
+    }
+#endif
+
+#if __CLPP_CL_ABI_VERSION >= 201U
+    struct SubGroupObj
+    {
+        cl_kernel kernel;
+        cl_device_id device;
+        size_t inputSize;
+        const void* input;
+        
+        SubGroupObj() { }
+        
+        SubGroupObj(cl_kernel k, cl_device_id d, size_t is, const void* i)
+                : kernel(k), device(d), inputSize(is), input(i)
+        { }
+    };
+    
+    /// internal function to get info about object (defined only if OpenCL ABI >= 2.1)
+    template<>
+    inline void getInfoInternal<SubGroupObj, cl_kernel_sub_group_info, KERNOPT_SUBGROUP>(
+                SubGroupObj obj, cl_kernel_sub_group_info paramName, size_t size,
+                void* infoRet, size_t* sizeRet)
+    {
+        const cl_int error = clGetKernelSubGroupInfo(obj.kernel, obj.device, paramName,
+                        obj.inputSize, obj.input, size, infoRet, sizeRet);
+        if (error != CL_SUCCESS)
+            throw Error(error, "clGetKernelSubGroupInfo");
     }
 #endif
     
@@ -1511,11 +1578,11 @@ public:
     { return getInfoString(CL_DEVICE_VERSION); }
     
 #if __CLPP_CL_VERSION >= 101U
-    /// ge OpenCL C version supported by device (defined only if OpenCL >= 1.1)
+    /// get OpenCL C version supported by device (defined only if OpenCL >= 1.1)
     std::string getOpenCLCVersion() const
     { return getInfoString(CL_DEVICE_OPENCL_C_VERSION); }
 #endif
-    
+
     /// get device extensions
     std::string getExtensions() const
     { return getInfoString(CL_DEVICE_EXTENSIONS); }
@@ -1553,6 +1620,21 @@ public:
     cl_uint refCount() const
     { return getInfo<cl_uint>(CL_DEVICE_REFERENCE_COUNT); }
 #endif
+
+#if __CLPP_CL_VERSION >= 201U
+    /// get IL version supported by device (defined only if OpenCL >= 2.1)
+    std::string getILVersion() const
+    { return getInfoString(CL_DEVICE_IL_VERSION); }
+    
+    /// get max number of subgroups
+    cl_uint getMaxNumSubGroups() const
+    { return getInfo<cl_uint>(CL_DEVICE_MAX_NUM_SUB_GROUPS); }
+    
+    /// is if this device supports independent forward progress of sub- groups
+    bool isSubGroupIndependentForwardProgress() const
+    { return getInfo<cl_bool>(CL_DEVICE_SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS); }
+#endif
+
 #if defined(__CLPP_DEVICE_FISSION) || defined(__CLPP_DOXYGEN)
     /// get parent device (defined if OpenCL >= 1.2 or __CLPP_DEVICE_FISSION)
     Device getParentDevice() const
@@ -1748,6 +1830,24 @@ public:
         return createSubDevices(props);
     }
 #endif
+
+#if __CLPP_CL_ABI_VERSION >= 201U
+    void getDeviceAndHostTimer(cl_ulong& deviceTimer, cl_ulong& hostTimer) const
+    {
+        const cl_int error = clGetDeviceAndHostTimer(device, &deviceTimer, &hostTimer);
+        if (error != CL_SUCCESS)
+            throw Error(error, "clGetDeviceAndHostTimer");
+    }
+    
+    cl_ulong getHostTimer() const
+    {
+        cl_ulong t;
+        const cl_int error = clGetHostTimer(device, &t);
+        if (error != CL_SUCCESS)
+            throw Error(error, "clGetHostTimer");
+        return t;
+    }
+#endif
 };
 
 #if __CLPP_CL_ABI_VERSION >= 102U
@@ -1871,6 +1971,12 @@ public:
     /// get platform extensions
     std::string getExtensions() const
     { return getInfoString(CL_PLATFORM_EXTENSIONS); }
+    
+#if __CLPP_CL_VERSION >= 201U
+    /// get host timer resolution
+    cl_ulong getHostTimerResolution() const
+    { return getInfo<cl_ulong>(CL_PLATFORM_HOST_TIMER_RESOLUTION); }
+#endif
     
     /// get devices with specified type
     std::vector<Device> getDevices(cl_device_type type) const
@@ -2353,6 +2459,12 @@ public:
     
     /// create command queues for all context devices (defined only if OpenCL ABI >= 2.0)
     std::vector<CommandQueue> createCommandQueues(const cl_queue_properties* props) const;
+#endif
+    
+#if __CLPP_CL_ABI_VERSION >= 201U
+    /// set default device command queue
+    void setDefaultDeviceCommandQueue(const Device& device,
+                        const CommandQueue& cmdQueue) const;
 #endif
 };
 
@@ -3839,6 +3951,10 @@ public:
     typedef std::pair<const char*, size_t> Source;
     /// Binary element (first - pointer to data, second - size)
     typedef std::pair<const void*, size_t> Binary;
+#if __CLPP_CL_ABI_VERSION >= 201U
+    /// IL element (first - pointer to data, second - size)
+    typedef std::pair<const void*, size_t> IL;
+#endif
     /// sources type
     typedef std::vector<Source> Sources;
     /// binaries type
@@ -3992,6 +4108,21 @@ public:
         if (program == NULL)
             throw Error(error, "clCreateProgramWithBinary");
     }
+    
+#if __CLPP_CL_ABI_VERSION >= 201U
+    /// constructor for program with IL
+    /**
+     * \param context context
+     * \param IL IL element
+     */
+    Program(const Context& context, const IL& il)
+    {
+        cl_int error;
+        program = clCreateProgramWithIL(context, il.first, il.second, &error);
+        if (program == NULL)
+            throw Error(error, "clCreateProgramWithIL");
+    }
+#endif
     
 #if __CLPP_CL_ABI_VERSION >= 102U
     /// constructor for builtin kernels (defined only if OpenCL ABI >= 1.2)
@@ -4195,6 +4326,11 @@ public:
     /// get kernel names (defined only if OpenCL 1.2)
     std::string getKernelNames() const
     { return getInfoString(CL_PROGRAM_KERNEL_NAMES); }
+#endif
+
+#if __CLPP_CL_VERSION >= 201U
+    std::vector<unsigned char> getIL() const
+    { return getInfoVector<unsigned char>(CL_PROGRAM_IL); }
 #endif
     
     /// get refererence count for this program
@@ -4708,6 +4844,70 @@ public:
     { return getArgInfoString(argIdx, CL_KERNEL_ARG_NAME); }
 #endif
     
+#if __CLPP_CL_ABI_VERSION >= 201U
+    /// get kernel subgroup info (defined only if OpenCL >= 2.1)
+    template<typename T>
+    T getSubGroupInfo(cl_device_id device, size_t inputSize, const void* input,
+                      cl_kernel_arg_info paramName) const
+    { return impl::GetInfoHelper<impl::SubGroupObj, cl_kernel_sub_group_info, T,
+                impl::KERNOPT_SUBGROUP>::getInfo(
+                    impl::SubGroupObj(kernel, device, inputSize, input), paramName); }
+    
+    /// get kernel subgroup info (defined only if OpenCL >= 2.1)
+    template<typename T>
+    void getSubGroupInfo(cl_device_id device, size_t inputSize, const void* input,
+                    cl_kernel_arg_info paramName, T& value) const
+    { impl::GetInfoHelper<impl::SubGroupObj, cl_kernel_sub_group_info, T,
+                impl::KERNOPT_SUBGROUP>::getInfo(
+                        impl::SubGroupObj(kernel, device, inputSize, input),
+                        paramName, value); }
+    
+    /// get kernel subgroup info (defined only if OpenCL >= 2.1)
+    std::string getSubGroupInfoString(cl_device_id device, size_t inputSize,
+                        const void* input, cl_kernel_sub_group_info paramName) const
+    { return impl::GetInfoHelper<impl::SubGroupObj, cl_kernel_sub_group_info,
+                std::string, impl::KERNOPT_SUBGROUP>::getInfo(
+                        impl::SubGroupObj(kernel, device, inputSize, input),
+                        paramName); }
+    
+    /// get kernel subgroup info as vector (defined only if OpenCL >= 2.1)
+    template<typename T>
+    std::vector<T> getSubGroupInfoVector(cl_device_id device, size_t inputSize,
+                        const void* input, cl_kernel_sub_group_info paramName) const
+    { return impl::GetInfoHelper<impl::SubGroupObj, cl_kernel_sub_group_info, T,
+                impl::KERNOPT_SUBGROUP>::getInfoVector(
+                        impl::SubGroupObj(kernel, device, inputSize, input),
+                        paramName); }
+    
+    /// get maximum subgroup size for kernel (defined only if OpenCL >= 2.1)
+    size_t getMaxSubGroupSizeForNDRange(const Device& device, Size3 input) const
+    {
+        const size_t inSize = input[2]!=0 ? 3 : input[1]!=0 ? 2 : 1;
+        return getSubGroupInfo<size_t>(device, sizeof(size_t)*inSize, &input,
+                CL_KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE);
+    }
+    
+    ///get number of subgroups for given local size (defined only if OpenCL >= 2.1)
+    size_t getSubGroupCountForNDRange(const Device& device, Size3 input) const
+    {
+        const size_t inSize = input[2]!=0 ? 3 : input[1]!=0 ? 2 : 1;
+        return getSubGroupInfo<size_t>(device, sizeof(size_t)*inSize, &input,
+                CL_KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE);
+    }
+    
+    /// get local size for subgroup count (defined only if OpenCL >= 2.1)
+    Size3 getLocalSizeForSubGroupCount(const Device& device, size_t input) const
+    { return getSubGroupInfo<Size3>(device, sizeof(size_t), &input,
+            CL_KERNEL_LOCAL_SIZE_FOR_SUB_GROUP_COUNT); }
+    
+    /// get max number of subgroups (defined only if OpenCL >= 2.1)
+    size_t getMaxNumSubGroups(const Device& device) const
+    { return getSubGroupInfo<size_t>(device, 0, NULL, CL_KERNEL_MAX_NUM_SUB_GROUPS); }
+    
+    /// get compile number of subgroups (defined only if OpenCL >= 2.1)
+    size_t getCompileNumSubGroups(const Device& device) const
+    { return getSubGroupInfo<size_t>(device, 0, NULL, CL_KERNEL_COMPILE_NUM_SUB_GROUPS); }
+#endif
     /// set kernel argument
     /**
      * \param argIndex argument index
@@ -5138,6 +5338,18 @@ public:
     /// set SVM coarse-grain system (defined only if OpenCL ABI >= 2.0)
     void setSVMCoarseGrainSystem() const
     { setExecInfo<cl_bool>(CL_KERNEL_EXEC_INFO_SVM_FINE_GRAIN_SYSTEM, CL_FALSE); }
+#endif
+
+#if __CLPP_CL_ABI_VERSION >= 201U
+    Kernel clone() const
+    {
+        cl_int error;
+        Kernel kernel;
+        kernel.kernel = clCloneKernel(kernel, &error);
+        if (kernel.kernel==NULL)
+            throw Error(error, "clCloneKernel");
+        return kernel;
+    }
 #endif
 };
 
@@ -5829,6 +6041,12 @@ public:
     /// get command queue size in bytes (defined only if OpenCL >= 2.0)
     cl_uint getSize() const
     { return getInfo<cl_uint>(CL_QUEUE_SIZE); }
+#endif
+
+#if __CLPP_CL_VERSION >= 201U
+    /// get default command queue for device
+    CommandQueue getDeviceDefault() const
+    { return getInfo<CommandQueue>(CL_QUEUE_DEVICE_DEFAULT); }
 #endif
     
 #if __CLPP_CL_ABI_VERSION <= 100U || (defined(CL_USE_DEPRECATED_OPENCL_1_0_APIS) && \
@@ -6573,7 +6791,9 @@ public:
             const std::vector<Event>& waitList = std::vector<Event>()) const
     { return enqueueNDRangeKernel(kernel, 0, globalWorkSize, 0, waitList); }
     
-#if __CLPP_CL_ABI_VERSION <= 102U || defined(CL_USE_DEPRECATED_OPENCL_2_0_APIS)
+#if __CLPP_CL_ABI_VERSION <= 102U || \
+        (defined(CL_USE_DEPRECATED_OPENCL_2_0_APIS) && !defined(CL_VERSION_2_1)) || \
+        (defined(CL_USE_DEPRECATED_OPENCL_1_2_APIS) && defined(CL_VERSION_2_1))
     /// enqueue task (deprectated if OpenCL ABI >= 2.0)
     /**
      * \param kernel kernel to execute
@@ -6991,6 +7211,51 @@ public:
                 const std::vector<Event>& waitList = std::vector<Event>()) const
     { return enqueueSVMFree(svmPtrs, NULL, NULL, waitList); }
 #endif
+#if __CLPP_CL_ABI_VERSION >= 201U
+    /// enqueue SVM migrate memories
+    /**
+     * \param svmPtrsNum number of svm pointers
+     * \param svmPtrs pointers to shared virtual memory
+     * \param sizes sizes for memories
+     * \param flags migration flags
+     * \param waitList waitlist of events
+     * \return event of command
+     */
+    Event enqueueSVMMigrateMem(cl_uint svmPtrsNum, const void** svmPtrs, size_t* sizes,
+                cl_mem_migration_flags flags,
+                const std::vector<Event>& waitList = std::vector<Event>())
+    {
+        Event event;
+        const cl_int error = clEnqueueSVMMigrateMem(queue, svmPtrsNum, svmPtrs, sizes,
+                flags, waitList.size(), reinterpret_cast<const cl_event*>(
+                !waitList.empty()?&waitList[0]:NULL), reinterpret_cast<cl_event*>(&event));
+        if (error != CL_SUCCESS)
+            throw Error(error, "clEnqueueSVMMigrateMem");
+        return event;
+    }
+    
+    /// enqueue SVM migrate memories
+    /**
+     * \param svmPtrs pointers to shared virtual memory
+     * \param sizes sizes for memories
+     * \param flags migration flags
+     * \param waitList waitlist of events
+     * \return event of command
+     */
+    Event enqueueSVMMigrateMem(const std::vector<void*>& svmPtrs,
+                const std::vector<size_t>& sizes, cl_mem_migration_flags flags,
+                const std::vector<Event>& waitList = std::vector<Event>())
+    {
+        Event event;
+        const cl_int error = clEnqueueSVMMigrateMem(queue, svmPtrs.size(),
+                const_cast<const void**>(&(svmPtrs[0])),
+                &(sizes[0]), flags, waitList.size(), reinterpret_cast<const cl_event*>(
+                !waitList.empty()?&waitList[0]:NULL), reinterpret_cast<cl_event*>(&event));
+        if (error != CL_SUCCESS)
+            throw Error(error, "clEnqueueSVMMigrateMem");
+        return event;
+    }
+#endif
 };
 
 /// CommandQueue alias
@@ -7050,6 +7315,16 @@ inline std::vector<CommandQueue> Context::createCommandQueues(
     for (cl_uint i = 0; i < devices.size(); i++)
         queues[i] = CommandQueue(*this, devices[i], props);
     return queues;
+}
+#endif
+
+#if __CLPP_CL_ABI_VERSION >= 201U
+inline void Context::setDefaultDeviceCommandQueue(const Device& device,
+            const CommandQueue& cmdQueue) const
+{
+    const cl_int error = clSetDefaultDeviceCommandQueue(context, device, cmdQueue);
+    if (error != CL_SUCCESS)
+        throw Error(error, "clSetDefaultDeviceCommandQueue");
 }
 #endif
 

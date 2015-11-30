@@ -20,7 +20,6 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
-#include <cmath>
 #include <cstdio>
 #include <zlib.h>
 #include <png.h>
@@ -58,7 +57,7 @@ static const char* kernelCode =
 static const cl_uint imageWidth = 1024;
 static const cl_uint imageHeight = 1024;
 
-void png_warn_error_fn(png_structp pngstr,char *str)
+void png_warn_error_fn(png_structp pngstr, const char *str)
 {
     fputs(str,stderr);
 }
@@ -110,11 +109,15 @@ try
     clpp::CommandQueue cmdQueue(context, device);
     
     const size_t workGroupSize = kernel.getWorkGroupSize(device);
-    const size_t localDim = std::sqrt(workGroupSize);
-    const Size3 localSize(localDim, localDim);
-    std::cout << "LocalDim: " << localDim << std::endl;
-    const Size3 alignedSize(((imageWidth+localDim-1)/localDim)*localDim,
-            ((imageHeight+localDim-1)/localDim)*localDim);
+    size_t localDim = 0;
+    for (size_t i = 1; i*i <= workGroupSize; i++)
+        if (workGroupSize%i == 0 && i > localDim)
+            localDim = i;
+    
+    const Size3 localSize(localDim, workGroupSize/localDim);
+    std::cout << "LocalDim: " << localSize[0] << "x" << localSize[1] << std::endl;
+    const Size3 alignedSize(((imageWidth+localSize[0]-1)/localSize[0])*localSize[0],
+            ((imageHeight+localSize[1]-1)/localSize[1])*localSize[1]);
     
     cmdQueue.enqueueNDRangeKernel(kernel, alignedSize, localSize).wait();
     std::cout << "Generated now!" << std::endl;
@@ -128,9 +131,10 @@ try
     try
     {
         outFile = fopen("outputimg.png", "wb");
+        if (outFile==NULL)
+            throw Error("Cant open output file");
         if((pngstr=png_create_write_struct(PNG_LIBPNG_VER_STRING,NULL,
-            (png_error_ptr)png_warn_error_fn,
-            (png_error_ptr)png_warn_error_fn))==NULL)
+            png_warn_error_fn, png_warn_error_fn))==NULL)
             throw Error("Can't initialize PNG structures!");
         if((info=png_create_info_struct(pngstr))==NULL)
             throw Error("Can't initialize PNG structures!");
