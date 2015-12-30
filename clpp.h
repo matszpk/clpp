@@ -72,7 +72,7 @@
 #   include <CL/cl.h>
 #endif
 
-#ifdef _WINDOWS
+#ifdef _WIN32
 #pragma push_macro("max")
 #undef max
 #endif
@@ -7799,7 +7799,7 @@ inline bool operator!=(const cl_image_format& a, const cl_image_format& b)
 { return a.image_channel_order!=b.image_channel_order ||
     a.image_channel_data_type!=b.image_channel_data_type; }
 
-#ifdef _WINDOWS
+#ifdef _WIN32
 #pragma pop_macro("max")
 #endif
 
