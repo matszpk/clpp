@@ -385,11 +385,11 @@ public:
         else if (_error == CL_IMAGE_FORMAT_NOT_SUPPORTED) _name = "CL_IMAGE_FORMAT_NOT_SUPPORTED";
         else if (_error == CL_BUILD_PROGRAM_FAILURE) _name = "CL_BUILD_PROGRAM_FAILURE";
         else if (_error == CL_MAP_FAILURE) _name = "CL_MAP_FAILURE";
-#if __CLPP_CL_ABI_VERSION >= 101U
+#if __CLPP_CL_VERSION >= 101U
         else if (_error == CL_MISALIGNED_SUB_BUFFER_OFFSET) _name = "CL_MISALIGNED_SUB_BUFFER_OFFSET";
         else if (_error == CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST) _name = "CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST";
 #endif
-#if __CLPP_CL_ABI_VERSION >= 102U
+#if __CLPP_CL_VERSION >= 102U
         else if (_error == CL_COMPILE_PROGRAM_FAILURE) _name = "CL_COMPILE_PROGRAM_FAILURE";
         else if (_error == CL_LINKER_NOT_AVAILABLE) _name = "CL_LINKER_NOT_AVAILABLE";
         else if (_error == CL_LINK_PROGRAM_FAILURE) _name = "CL_LINK_PROGRAM_FAILURE";
@@ -430,16 +430,16 @@ public:
         else if (_error == CL_INVALID_BUFFER_SIZE) _name = "CL_INVALID_BUFFER_SIZE";
         else if (_error == CL_INVALID_MIP_LEVEL) _name = "CL_INVALID_MIP_LEVEL";
         else if (_error == CL_INVALID_GLOBAL_WORK_SIZE) _name = "CL_INVALID_GLOBAL_WORK_SIZE";
-#if __CLPP_CL_ABI_VERSION >= 101U
+#if __CLPP_CL_VERSION >= 101U
         else if (_error == CL_INVALID_PROPERTY) _name = "CL_INVALID_PROPERTY";
 #endif
-#if __CLPP_CL_ABI_VERSION >= 102U
+#if __CLPP_CL_VERSION >= 102U
         else if (_error == CL_INVALID_IMAGE_DESCRIPTOR) _name = "CL_INVALID_IMAGE_DESCRIPTOR";
         else if (_error == CL_INVALID_COMPILER_OPTIONS) _name = "CL_INVALID_COMPILER_OPTIONS";
         else if (_error == CL_INVALID_LINKER_OPTIONS) _name = "CL_INVALID_LINKER_OPTIONS";
         else if (_error == CL_INVALID_DEVICE_PARTITION_COUNT) _name = "CL_INVALID_DEVICE_PARTITION_COUNT";
 #endif
-#if __CLPP_CL_ABI_VERSION >= 200U
+#if __CLPP_CL_VERSION >= 200U
         else if (_error == CL_INVALID_PIPE_SIZE) _name = "CL_INVALID_PIPE_SIZE";
         else if (_error == CL_INVALID_DEVICE_QUEUE) _name = "CL_INVALID_DEVICE_QUEUE";
 #endif
