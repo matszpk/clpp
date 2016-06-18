@@ -776,7 +776,10 @@ static void ErrorClassTester()
     assertCStrEqual("ErrorClassTesterEmpty msgTest", "No error!", error0.what());
     clpp::Error error1(7, "buru");
     assertEqual("ErrorClassTesterEmpty error", 7, error1.err());
-    assertCStrEqual("ErrorClassTester msgTest", "Error code: 7, Desc: buru", error1.what());
+    assertCStrEqual("ErrorClassTester msgTest", "Error code: 7 (Unknown error code), Desc: buru", error1.what());
+    clpp::Error error2(CL_INVALID_VALUE, "clEnqueueNDRangeKernel");
+    assertEqual("ErrorClassTesterEmpty error", CL_INVALID_VALUE, error2.err());
+    assertCStrEqual("ErrorClassTester msgTest", "Error code: -30 (CL_INVALID_VALUE), Desc: clEnqueueNDRangeKernel", error2.what());
 }
 
 static void Size3Tester()

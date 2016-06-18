@@ -322,6 +322,7 @@ class Error: public std::exception
 {
 private:
     cl_int error;
+    std::string name;
     std::string description;
 public:
     /// empty constructor
@@ -329,7 +330,7 @@ public:
     { }
     
     /// constructs error from description
-    explicit Error(const char* _description) : error(0), description(_description)
+    explicit Error(const char* _description) : error(0), name(""), description(_description)
     { }
     
     /// constructs error from errorCode and description
@@ -345,9 +346,13 @@ public:
 #else
         snprintf(buf, 20, "%d", _error);
 #endif
+        name = code_to_name(_error);
+
         description = "Error code: ";
         description += buf;
-        description += ", Desc: ";
+        description += " (";
+        description += name;
+        description += "), Desc: ";
         description += _description;
     }
     
@@ -358,6 +363,88 @@ public:
     /// what method
     const char* what() const __CLPP_NOEXCEPT
     { return (!description.empty()) ? description.c_str() : "No error!"; }
+
+    /// converts error code to error name
+    /**
+     * \param _error an OpenCL error code
+     */
+    std::string code_to_name(cl_int _error)
+    {
+        std::string _name = "Unknown error code";
+        if (_error == CL_SUCCESS) _name = "CL_SUCCESS";
+        else if (_error == CL_DEVICE_NOT_FOUND) _name = "CL_DEVICE_NOT_FOUND";
+        else if (_error == CL_DEVICE_NOT_FOUND) _name = "CL_DEVICE_NOT_FOUND";
+        else if (_error == CL_DEVICE_NOT_AVAILABLE) _name = "CL_DEVICE_NOT_AVAILABLE";
+        else if (_error == CL_COMPILER_NOT_AVAILABLE) _name = "CL_COMPILER_NOT_AVAILABLE";
+        else if (_error == CL_MEM_OBJECT_ALLOCATION_FAILURE) _name = "CL_MEM_OBJECT_ALLOCATION_FAILURE";
+        else if (_error == CL_OUT_OF_RESOURCES) _name = "CL_OUT_OF_RESOURCES";
+        else if (_error == CL_OUT_OF_HOST_MEMORY) _name = "CL_OUT_OF_HOST_MEMORY";
+        else if (_error == CL_PROFILING_INFO_NOT_AVAILABLE) _name = "CL_PROFILING_INFO_NOT_AVAILABLE";
+        else if (_error == CL_MEM_COPY_OVERLAP) _name = "CL_MEM_COPY_OVERLAP";
+        else if (_error == CL_IMAGE_FORMAT_MISMATCH) _name = "CL_IMAGE_FORMAT_MISMATCH";
+        else if (_error == CL_IMAGE_FORMAT_NOT_SUPPORTED) _name = "CL_IMAGE_FORMAT_NOT_SUPPORTED";
+        else if (_error == CL_BUILD_PROGRAM_FAILURE) _name = "CL_BUILD_PROGRAM_FAILURE";
+        else if (_error == CL_MAP_FAILURE) _name = "CL_MAP_FAILURE";
+#if __CLPP_CL_ABI_VERSION >= 101U
+        else if (_error == CL_MISALIGNED_SUB_BUFFER_OFFSET) _name = "CL_MISALIGNED_SUB_BUFFER_OFFSET";
+        else if (_error == CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST) _name = "CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST";
+#endif
+#if __CLPP_CL_ABI_VERSION >= 102U
+        else if (_error == CL_COMPILE_PROGRAM_FAILURE) _name = "CL_COMPILE_PROGRAM_FAILURE";
+        else if (_error == CL_LINKER_NOT_AVAILABLE) _name = "CL_LINKER_NOT_AVAILABLE";
+        else if (_error == CL_LINK_PROGRAM_FAILURE) _name = "CL_LINK_PROGRAM_FAILURE";
+        else if (_error == CL_DEVICE_PARTITION_FAILED) _name = "CL_DEVICE_PARTITION_FAILED";
+        else if (_error == CL_KERNEL_ARG_INFO_NOT_AVAILABLE) _name = "CL_KERNEL_ARG_INFO_NOT_AVAILABLE";
+#endif
+        else if (_error == CL_INVALID_VALUE) _name = "CL_INVALID_VALUE";
+        else if (_error == CL_INVALID_DEVICE_TYPE) _name = "CL_INVALID_DEVICE_TYPE";
+        else if (_error == CL_INVALID_PLATFORM) _name = "CL_INVALID_PLATFORM";
+        else if (_error == CL_INVALID_DEVICE) _name = "CL_INVALID_DEVICE";
+        else if (_error == CL_INVALID_CONTEXT) _name = "CL_INVALID_CONTEXT";
+        else if (_error == CL_INVALID_QUEUE_PROPERTIES) _name = "CL_INVALID_QUEUE_PROPERTIES";
+        else if (_error == CL_INVALID_COMMAND_QUEUE) _name = "CL_INVALID_COMMAND_QUEUE";
+        else if (_error == CL_INVALID_HOST_PTR) _name = "CL_INVALID_HOST_PTR";
+        else if (_error == CL_INVALID_MEM_OBJECT) _name = "CL_INVALID_MEM_OBJECT";
+        else if (_error == CL_INVALID_IMAGE_FORMAT_DESCRIPTOR) _name = "CL_INVALID_IMAGE_FORMAT_DESCRIPTOR";
+        else if (_error == CL_INVALID_IMAGE_SIZE) _name = "CL_INVALID_IMAGE_SIZE";
+        else if (_error == CL_INVALID_SAMPLER) _name = "CL_INVALID_SAMPLER";
+        else if (_error == CL_INVALID_BINARY) _name = "CL_INVALID_BINARY";
+        else if (_error == CL_INVALID_BUILD_OPTIONS) _name = "CL_INVALID_BUILD_OPTIONS";
+        else if (_error == CL_INVALID_PROGRAM) _name = "CL_INVALID_PROGRAM";
+        else if (_error == CL_INVALID_PROGRAM_EXECUTABLE) _name = "CL_INVALID_PROGRAM_EXECUTABLE";
+        else if (_error == CL_INVALID_KERNEL_NAME) _name = "CL_INVALID_KERNEL_NAME";
+        else if (_error == CL_INVALID_KERNEL_DEFINITION) _name = "CL_INVALID_KERNEL_DEFINITION";
+        else if (_error == CL_INVALID_KERNEL) _name = "CL_INVALID_KERNEL";
+        else if (_error == CL_INVALID_ARG_INDEX) _name = "CL_INVALID_ARG_INDEX";
+        else if (_error == CL_INVALID_ARG_VALUE) _name = "CL_INVALID_ARG_VALUE";
+        else if (_error == CL_INVALID_ARG_SIZE) _name = "CL_INVALID_ARG_SIZE";
+        else if (_error == CL_INVALID_KERNEL_ARGS) _name = "CL_INVALID_KERNEL_ARGS";
+        else if (_error == CL_INVALID_WORK_DIMENSION) _name = "CL_INVALID_WORK_DIMENSION";
+        else if (_error == CL_INVALID_WORK_GROUP_SIZE) _name = "CL_INVALID_WORK_GROUP_SIZE";
+        else if (_error == CL_INVALID_WORK_ITEM_SIZE) _name = "CL_INVALID_WORK_ITEM_SIZE";
+        else if (_error == CL_INVALID_GLOBAL_OFFSET) _name = "CL_INVALID_GLOBAL_OFFSET";
+        else if (_error == CL_INVALID_EVENT_WAIT_LIST) _name = "CL_INVALID_EVENT_WAIT_LIST";
+        else if (_error == CL_INVALID_EVENT) _name = "CL_INVALID_EVENT";
+        else if (_error == CL_INVALID_OPERATION) _name = "CL_INVALID_OPERATION";
+        else if (_error == CL_INVALID_GL_OBJECT) _name = "CL_INVALID_GL_OBJECT";
+        else if (_error == CL_INVALID_BUFFER_SIZE) _name = "CL_INVALID_BUFFER_SIZE";
+        else if (_error == CL_INVALID_MIP_LEVEL) _name = "CL_INVALID_MIP_LEVEL";
+        else if (_error == CL_INVALID_GLOBAL_WORK_SIZE) _name = "CL_INVALID_GLOBAL_WORK_SIZE";
+#if __CLPP_CL_ABI_VERSION >= 101U
+        else if (_error == CL_INVALID_PROPERTY) _name = "CL_INVALID_PROPERTY";
+#endif
+#if __CLPP_CL_ABI_VERSION >= 102U
+        else if (_error == CL_INVALID_IMAGE_DESCRIPTOR) _name = "CL_INVALID_IMAGE_DESCRIPTOR";
+        else if (_error == CL_INVALID_COMPILER_OPTIONS) _name = "CL_INVALID_COMPILER_OPTIONS";
+        else if (_error == CL_INVALID_LINKER_OPTIONS) _name = "CL_INVALID_LINKER_OPTIONS";
+        else if (_error == CL_INVALID_DEVICE_PARTITION_COUNT) _name = "CL_INVALID_DEVICE_PARTITION_COUNT";
+#endif
+#if __CLPP_CL_ABI_VERSION >= 200U
+        else if (_error == CL_INVALID_PIPE_SIZE) _name = "CL_INVALID_PIPE_SIZE";
+        else if (_error == CL_INVALID_DEVICE_QUEUE) _name = "CL_INVALID_DEVICE_QUEUE";
+#endif
+        return _name;
+    }
     
     /// get error code
     int err() const
