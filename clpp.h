@@ -1,6 +1,8 @@
 /*
  *  clpp.h - An OpenCL C++/C++11 wrapper
  *  Copyright (C) 2015 Mateusz Szpakowski
+ *  Contributors:
+ *  Lukasz Towarek (ltowarek)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
