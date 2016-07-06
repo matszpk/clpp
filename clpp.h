@@ -26,30 +26,37 @@
 #define __CLPP_H__
 
 #if __CLPP_CL_ABI_VERSION==100
+#   define CL_USE_DEPRECATED_OPENCL_2_1_APIS 1
 #   define CL_USE_DEPRECATED_OPENCL_2_0_APIS 1
 #   define CL_USE_DEPRECATED_OPENCL_1_2_APIS 1
 #   define CL_USE_DEPRECATED_OPENCL_1_1_APIS 1
 #   define CL_USE_DEPRECATED_OPENCL_1_0_APIS 1
 #endif
 #if __CLPP_CL_ABI_VERSION==101
+#   define CL_USE_DEPRECATED_OPENCL_2_1_APIS 1
 #   define CL_USE_DEPRECATED_OPENCL_2_0_APIS 1
 #   define CL_USE_DEPRECATED_OPENCL_1_2_APIS 1
 #   define CL_USE_DEPRECATED_OPENCL_1_1_APIS 1
 #endif
 #if __CLPP_CL_ABI_VERSION==102
+#   define CL_USE_DEPRECATED_OPENCL_2_1_APIS 1
 #   define CL_USE_DEPRECATED_OPENCL_2_0_APIS 1
 #   define CL_USE_DEPRECATED_OPENCL_1_2_APIS 1
 #endif
 #if __CLPP_CL_ABI_VERSION==200
+#   define CL_USE_DEPRECATED_OPENCL_2_1_APIS 1
 #   define CL_USE_DEPRECATED_OPENCL_2_0_APIS 1
+#endif
+#if __CLPP_CL_ABI_VERSION==201
+#   define CL_USE_DEPRECATED_OPENCL_2_1_APIS 1
 #endif
 
 /// clpp major version number
 #define __CLPP_MAJOR_VERSION 0
 /// clpp minor version number
-#define __CLPP_MINOR_VERSION 2
+#define __CLPP_MINOR_VERSION 3
 /// clpp version string
-#define __CLPP_VERSION_STRING "0.2"
+#define __CLPP_VERSION_STRING "0.3"
 
 #include <cstdio>
 #include <exception>
@@ -121,7 +128,11 @@ clSetCommandQueueProperty(cl_command_queue              /* command_queue */,
 };
 #endif
 
-#if defined(CL_VERSION_2_1)
+#if defined(CL_VERSION_2_2)
+#    if (!defined(__CLPP_CL_ABI_VERSION) || __CLPP_CL_ABI_VERSION>202)
+#       define __CLPP_CL_ABI_VERSION (202U)
+#    endif
+#elif defined(CL_VERSION_2_1)
 #    if (!defined(__CLPP_CL_ABI_VERSION) || __CLPP_CL_ABI_VERSION>201)
 #       define __CLPP_CL_ABI_VERSION (201U)
 #    endif
@@ -143,7 +154,11 @@ clSetCommandQueueProperty(cl_command_queue              /* command_queue */,
 #    endif
 #endif
 
-#if defined(CL_VERSION_2_1)
+#if defined(CL_VERSION_2_2)
+#    if (!defined(__CLPP_CL_VERSION) || __CLPP_CL_VERSION>202)
+#       define __CLPP_CL_VERSION (202U)
+#    endif
+#elif defined(CL_VERSION_2_1)
 #    if (!defined(__CLPP_CL_VERSION) || __CLPP_CL_VERSION>201)
 #       define __CLPP_CL_VERSION (201U)
 #    endif
@@ -215,6 +230,13 @@ clSetCommandQueueProperty(cl_command_queue              /* command_queue */,
 #    define __CLPP_DEPRECATED
 #endif
 
+#if __CLPP_CL_VERSION>=202 && !defined(CL_USE_DEPRECATED_OPENCL_2_1_APIS)
+/// deprecated macro for deprecated features in OpenCL 2.2 standard
+#    define __CLPP_CL_2_2_DEPRECATED __CLPP_DEPRECATED
+#else
+/// deprecated macro for deprecated features in OpenCL 2.2 standard
+#    define __CLPP_CL_2_2_DEPRECATED
+#endif
 #if __CLPP_CL_VERSION>=201 && \
         (!defined(CL_USE_DEPRECATED_OPENCL_2_0_APIS) || !defined(CL_VERSION_2_1))
 /// deprecated macro for deprecated features in OpenCL 2.1 standard
@@ -247,6 +269,13 @@ clSetCommandQueueProperty(cl_command_queue              /* command_queue */,
 #    define __CLPP_CL_1_1_DEPRECATED
 #endif
 
+#if __CLPP_CL_ABI_VERSION>=202 && !defined(CL_USE_DEPRECATED_OPENCL_2_1_APIS)
+/// deprecated macro for deprecated features in OpenCL 2.2 standard
+#    define __CLPP_CL_ABI_2_2_DEPRECATED __CLPP_DEPRECATED
+#else
+/// deprecated macro for deprecated features in OpenCL 2.2 standard
+#    define __CLPP_CL_ABI_2_2_DEPRECATED
+#endif
 #if __CLPP_CL_ABI_VERSION>=201 && \
         (!defined(CL_USE_DEPRECATED_OPENCL_2_0_APIS) || !defined(CL_VERSION_2_1))
 /// deprecated macro for deprecated functions in OpenCL 2.1 standard
@@ -317,6 +346,11 @@ typedef void (CL_CALLBACK* EventCallback)(cl_event, cl_int, void*);
 #if __CLPP_CL_ABI_VERSION >= 200U
 /// SVM free callback (defined only if OpenCL ABI >= 2.0)
 typedef void (CL_CALLBACK* SVMFreeCallback)(cl_command_queue, cl_uint, void**, void*);
+#endif
+
+#if __CLPP_CL_ABI_VERSION >= 202U
+/// program release callback (defined only if OpenCL ABI >= 2.2)
+typedef void (CL_CALLBACK* ProgramReleaseCallback)(cl_program, void*);
 #endif
 
 /// error class based on std::exception
@@ -4418,8 +4452,19 @@ public:
 #endif
 
 #if __CLPP_CL_VERSION >= 201U
+    /// get program IL
     std::vector<unsigned char> getIL() const
     { return getInfoVector<unsigned char>(CL_PROGRAM_IL); }
+#endif
+
+#if __CLPP_CL_VERSION >= 202U
+    /// is program have non-trivial global scope constructors (defined only if OpenCL 2.2)
+    bool isScopeGlobalCtorsPresent() const
+    { return getInfo<cl_bool>(CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT); }
+    
+    /// is program have non-trivial global scope destructors (defined only if OpenCL 2.2)
+    bool isScopeGlobalDtorsPresent() const
+    { return getInfo<cl_bool>(CL_PROGRAM_SCOPE_GLOBAL_DTORS_PRESENT); }
 #endif
     
     /// get refererence count for this program
@@ -4665,6 +4710,28 @@ public:
     
     /// create specified number of kernels
     std::vector<Kernel> kernelCopies(const char* name, cl_uint number) const;
+    
+#if __CLPP_CL_ABI_VERSION >= 202U
+    /// set program specialization constant (defined only if OpenCL ABI >= 2.2)
+    void setSpecializationConstant(cl_uint specId,
+                        const std::vector<unsigned char>& value) const
+    {
+        cl_int error;
+        error = clSetProgramSpecializationConstant(program, specId, value.size(),
+                                (const void*)(&value[0]));
+        if (error != CL_SUCCESS)
+            throw Error(error, "clSetProgramSpecializationConstant");
+    }
+    
+    /// set program release callback (defined only if OpenCL ABI >= 2.2)
+    void setReleaseCallback(ProgramReleaseCallback callback, void* userData = NULL) const
+    {
+        cl_int error;
+        error = clSetProgramReleaseCallback(program, callback, userData);
+        if (error != CL_SUCCESS)
+            throw Error(error, "clSetProgramReleaseCalback");
+    }
+#endif
 };
 
 namespace impl
