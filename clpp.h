@@ -25,6 +25,10 @@
 #ifndef __CLPP_H__
 #define __CLPP_H__
 
+#ifndef __CLPP_CL_ABI_VERSION
+#    define __CLPP_CL_ABI_VERSION __CLPP_CL_VERSION
+#endif
+
 #if __CLPP_CL_ABI_VERSION==100
 #   define CL_USE_DEPRECATED_OPENCL_2_1_APIS 1
 #   define CL_USE_DEPRECATED_OPENCL_2_0_APIS 1
@@ -110,10 +114,6 @@
     
     /// enables OpenCL GL Interoperability extensions
     #define __CLPP_CL_GL_EXT
-#endif
-
-#ifndef __CLPP_CL_ABI_VERSION
-#    define __CLPP_CL_ABI_VERSION __CLPP_CL_VERSION
 #endif
 
 #if (defined(CL_VERSION_2_0) || defined(CL_VERSION_1_2)) && __CLPP_CL_ABI_VERSION==100
