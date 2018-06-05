@@ -479,6 +479,21 @@ public:
         else if (_error == CL_INVALID_PIPE_SIZE) _name = "CL_INVALID_PIPE_SIZE";
         else if (_error == CL_INVALID_DEVICE_QUEUE) _name = "CL_INVALID_DEVICE_QUEUE";
 #endif
+#if __CLPP_CL_VERSION >= 201U
+        else if (_error == CL_INVALID_SPEC_ID) _name = "CL_INVALID_SPEC_ID";
+        else if (_error == CL_MAX_SIZE_RESTRICTION_EXCEEDED) _name = "CL_MAX_SIZE_RESTRICTION_EXCEEDED";
+#endif
+#if defined(__CLPP_DEVICE_FISSION)
+        else if (_error == CL_DEVICE_PARTITION_FAILED_EXT) _name = "CL_DEVICE_PARTITION_FAILED_EXT";
+        else if (_error == CL_INVALID_PARTITION_COUNT_EXT) _name = "CL_INVALID_PARTITION_COUNT_EXT";
+        else if (_error == CL_INVALID_PARTITION_NAME_EXT) _name = "CL_INVALID_PARTITION_NAME_EXT";
+#endif
+#if defined(__CLPP_CL_EXT)
+        else if (_error == CL_PLATFORM_NOT_FOUND_KHR) _name = "CL_PLATFORM_NOT_FOUND_KHR";
+#endif
+#if defined(__CLPP_CL_GL)
+        else if (_error == CL_INVALID_GL_SHAREGROUP_REFERENCE_KHR) _name = "CL_INVALID_GL_SHAREGROUP_REFERENCE_KHR";
+#endif
         return _name;
     }
     
@@ -1983,6 +1998,12 @@ namespace impl
 }
 #endif
 
+#if __CLPP_CL_ABI_VERSION <= 101U || defined(CL_USE_DEPRECATED_OPENCL_1_1_APIS)
+/// get function address
+__CLPP_CL_1_2_DEPRECATED void* getExtensionFunctionAddress(const char* funcname)
+{ return getExtensionFunctionAddress(funcname); }
+#endif
+
 /// OpenCL Platform object wrapper
 class Platform
 {
@@ -2137,6 +2158,9 @@ public:
     /// get custom devices from platform (defined only if OpenCL >= 1.2)
     std::vector<Device> getCustomDevices() const
     { return getDevices(CL_DEVICE_TYPE_CUSTOM); }
+    /// get extension function address
+    void* getExtensionFunctionAddress(const char* funcname) const
+    { return clGetExtensionFunctionAddressForPlatform(platform, funcname); }
 #endif
     
 #if __CLPP_CL_ABI_VERSION >= 102U
