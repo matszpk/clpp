@@ -643,6 +643,70 @@ struct SVMPtr
 /// implementation namespace
 namespace impl
 {
+    struct cl_platform_info_wrapper
+    { typedef cl_platform_info InfoType; };
+
+    struct cl_device_info_wrapper
+    { typedef cl_device_info InfoType; };
+
+    struct cl_context_info_wrapper
+    { typedef cl_context_info InfoType; };
+
+    struct cl_mem_info_wrapper
+    { typedef cl_mem_info InfoType; };
+
+    struct cl_image_info_wrapper
+    { typedef cl_mem_info InfoType; };
+
+#if __CLPP_CL_ABI_VERSION >= 200U
+    struct cl_pipe_info_wrapper
+    { typedef cl_mem_info InfoType; };
+#endif
+
+#ifdef __CLPP_CL_GL
+    struct cl_gl_texture_info_wrapper
+    { typedef cl_gl_texture_info InfoType; };
+#endif
+
+    struct cl_sampler_info_wrapper
+    { typedef cl_sampler_info InfoType; };
+
+    struct cl_program_info_wrapper
+    { typedef cl_program_info InfoType; };
+
+    struct cl_program_build_info_wrapper
+    { typedef cl_program_build_info InfoType; };
+
+    struct cl_kernel_info_wrapper
+    { typedef cl_kernel_info InfoType; };
+
+    struct cl_kernel_work_group_info_wrapper
+    { typedef cl_kernel_work_group_info InfoType; };
+
+#if __CLPP_CL_ABI_VERSION >= 102U
+    struct cl_kernel_arg_info_wrapper
+    { typedef cl_kernel_arg_info InfoType; };
+#endif
+
+#if __CLPP_CL_ABI_VERSION >= 201U
+    struct cl_kernel_sub_group_info_wrapper
+    { typedef cl_kernel_sub_group_info InfoType; };
+#endif
+
+    struct cl_event_info_wrapper
+    { typedef cl_event_info InfoType; };
+
+    struct cl_profiling_info_wrapper
+    { typedef cl_profiling_info InfoType; };
+
+    struct cl_command_queue_info_wrapper
+    { typedef cl_command_queue_info InfoType; };
+
+#ifdef __CLPP_CL_GL
+    struct cl_gl_context_info_wrapper
+    { typedef cl_gl_context_info InfoType; };
+#endif
+    
     /// internal retain routine
     template<typename T>
     inline void retainInternal(const T& object)
@@ -851,14 +915,14 @@ namespace impl
     
     /// internal function to get info about object
     template<typename CLType, typename InfoType, int Option>
-    inline void getInfoInternal(CLType obj, InfoType paramName, size_t size, void* infoRet,
-                size_t* sizeRet);
+    inline void getInfoInternal(CLType obj, typename InfoType::InfoType paramName,
+                size_t size, void* infoRet, size_t* sizeRet);
     
     /// internal function to get info about object
     template<>
-    inline void getInfoInternal<cl_platform_id, cl_platform_info, PLATOPT_PLATFORM>(
-                cl_platform_id obj, cl_platform_info paramName, size_t size,
-                void* infoRet, size_t* sizeRet)
+    inline void getInfoInternal<cl_platform_id, cl_platform_info_wrapper, PLATOPT_PLATFORM>(
+                cl_platform_id obj, cl_platform_info_wrapper::InfoType paramName,
+                size_t size, void* infoRet, size_t* sizeRet)
     {
         const cl_int error = clGetPlatformInfo(obj, paramName, size, infoRet, sizeRet);
         if (error != CL_SUCCESS)
@@ -867,8 +931,8 @@ namespace impl
     
     /// internal function to get info about object
     template<>
-    inline void getInfoInternal<cl_device_id, cl_device_info, DEVOPT_DEVICE>(
-                cl_device_id obj, cl_device_info paramName, size_t size,
+    inline void getInfoInternal<cl_device_id, cl_device_info_wrapper, DEVOPT_DEVICE>(
+                cl_device_id obj, cl_device_info_wrapper::InfoType paramName, size_t size,
                 void* infoRet, size_t* sizeRet)
     {
         const cl_int error = clGetDeviceInfo(obj, paramName, size, infoRet, sizeRet);
@@ -878,8 +942,8 @@ namespace impl
     
     /// internal function to get info about object
     template<>
-    inline void getInfoInternal<cl_context, cl_context_info, CTXOPT_CONTEXT>(
-                cl_context obj, cl_context_info paramName, size_t size,
+    inline void getInfoInternal<cl_context, cl_context_info_wrapper, CTXOPT_CONTEXT>(
+                cl_context obj, cl_context_info_wrapper::InfoType paramName, size_t size,
                 void* infoRet, size_t* sizeRet)
     {
         const cl_int error = clGetContextInfo(obj, paramName, size, infoRet, sizeRet);
@@ -889,8 +953,8 @@ namespace impl
     
     /// internal function to get info about object
     template<>
-    inline void getInfoInternal<cl_mem, cl_mem_info, MEMOPT_MEMORY>(
-                cl_mem obj, cl_mem_info paramName, size_t size,
+    inline void getInfoInternal<cl_mem, cl_mem_info_wrapper, MEMOPT_MEMORY>(
+                cl_mem obj, cl_mem_info_wrapper::InfoType paramName, size_t size,
                 void* infoRet, size_t* sizeRet)
     {
         const cl_int error = clGetMemObjectInfo(obj, paramName, size, infoRet, sizeRet);
@@ -900,9 +964,9 @@ namespace impl
     
     /// internal function to get info about object
     template<>
-    inline void getInfoInternal<cl_mem, cl_image_info, MEMOPT_IMAGE>(
-                cl_mem obj, cl_image_info paramName, size_t size, void* infoRet,
-                size_t* sizeRet)
+    inline void getInfoInternal<cl_mem, cl_image_info_wrapper, MEMOPT_IMAGE>(
+                cl_mem obj, cl_image_info_wrapper::InfoType paramName, size_t size,
+                void* infoRet, size_t* sizeRet)
     {
         const cl_int error = clGetImageInfo(obj, paramName, size, infoRet, sizeRet);
         if (error != CL_SUCCESS)
@@ -912,9 +976,9 @@ namespace impl
 #if __CLPP_CL_ABI_VERSION >= 200U
     /// internal function to get info about object (defined only if OpenCL ABI >= 2.0)
     template<>
-    inline void getInfoInternal<cl_mem, cl_pipe_info, MEMOPT_PIPE>(
-                cl_mem obj, cl_pipe_info paramName, size_t size, void* infoRet,
-                size_t* sizeRet)
+    inline void getInfoInternal<cl_mem, cl_pipe_info_wrapper, MEMOPT_PIPE>(
+                cl_mem obj, cl_pipe_info_wrapper::InfoType paramName, size_t size,
+                void* infoRet, size_t* sizeRet)
     {
         const cl_int error = clGetPipeInfo(obj, paramName, size, infoRet, sizeRet);
         if (error != CL_SUCCESS)
@@ -925,8 +989,8 @@ namespace impl
 #ifdef __CLPP_CL_GL
     /// internal function to get info about object (defined only if __CLPP_CL_GL)
     template<>
-    inline void getInfoInternal<cl_mem, cl_gl_texture_info, MEMOPT_TEXTUREGL>(
-                cl_mem obj, cl_gl_texture_info paramName, size_t size,
+    inline void getInfoInternal<cl_mem, cl_gl_texture_info_wrapper, MEMOPT_TEXTUREGL>(
+                cl_mem obj, cl_gl_texture_info_wrapper::InfoType paramName, size_t size,
                 void* infoRet, size_t* sizeRet)
     {
         const cl_int error = clGetGLTextureInfo(obj, paramName, size, infoRet, sizeRet);
@@ -937,8 +1001,8 @@ namespace impl
     
     /// internal function to get info about object
     template<>
-    inline void getInfoInternal<cl_sampler, cl_sampler_info,SAMPOPT_SAMPLER>(
-                cl_sampler obj, cl_sampler_info paramName, size_t size,
+    inline void getInfoInternal<cl_sampler, cl_sampler_info_wrapper, SAMPOPT_SAMPLER>(
+                cl_sampler obj, cl_sampler_info_wrapper::InfoType paramName, size_t size,
                 void* infoRet, size_t* sizeRet)
     {
         const cl_int error = clGetSamplerInfo(obj, paramName, size, infoRet, sizeRet);
@@ -948,8 +1012,8 @@ namespace impl
     
     /// internal function to get info about object
     template<>
-    inline void getInfoInternal<cl_program, cl_program_info, PROGOPT_PROGRAM>(
-                cl_program obj, cl_program_info paramName, size_t size,
+    inline void getInfoInternal<cl_program, cl_program_info_wrapper, PROGOPT_PROGRAM>(
+                cl_program obj, cl_program_info_wrapper::InfoType paramName, size_t size,
                 void* infoRet, size_t* sizeRet)
     {
         const cl_int error = clGetProgramInfo(obj, paramName, size, infoRet, sizeRet);
@@ -960,8 +1024,9 @@ namespace impl
     /// internal function to get info about object
     template<>
     inline void getInfoInternal<std::pair<cl_program, cl_device_id>,
-                cl_program_build_info, PROGOPT_BUILD>(std::pair<cl_program, cl_device_id> obj,
-                cl_program_build_info paramName, size_t size, void* infoRet, size_t* sizeRet)
+                cl_program_build_info_wrapper, PROGOPT_BUILD>(std::pair<cl_program,
+                cl_device_id> obj, cl_program_build_info_wrapper::InfoType paramName,
+                size_t size, void* infoRet, size_t* sizeRet)
     {
         const cl_int error = clGetProgramBuildInfo(obj.first, obj.second, paramName,
                     size, infoRet, sizeRet);
@@ -971,9 +1036,9 @@ namespace impl
     
     /// internal function to get info about object
     template<>
-    inline void getInfoInternal<cl_kernel, cl_kernel_info, KERNOPT_KERNEL>(
-                cl_kernel obj, cl_kernel_info paramName, size_t size, void* infoRet,
-                size_t* sizeRet)
+    inline void getInfoInternal<cl_kernel, cl_kernel_info_wrapper, KERNOPT_KERNEL>(
+                cl_kernel obj, cl_kernel_info_wrapper::InfoType paramName, size_t size,
+                void* infoRet, size_t* sizeRet)
     {
         const cl_int error = clGetKernelInfo(obj, paramName, size, infoRet, sizeRet);
         if (error != CL_SUCCESS)
@@ -982,9 +1047,11 @@ namespace impl
     
     /// internal function to get info about object
     template<>
-    inline void getInfoInternal<std::pair<cl_kernel, cl_device_id>, cl_kernel_work_group_info,
-                KERNOPT_WORKGROUP>(std::pair<cl_kernel, cl_device_id> obj,
-                cl_kernel_work_group_info paramName, size_t size, void* infoRet, size_t* sizeRet)
+    inline void getInfoInternal<std::pair<cl_kernel, cl_device_id>,
+                cl_kernel_work_group_info_wrapper, KERNOPT_WORKGROUP>(
+                std::pair<cl_kernel, cl_device_id> obj,
+                cl_kernel_work_group_info_wrapper::InfoType paramName, size_t size,
+                void* infoRet, size_t* sizeRet)
     {
         const cl_int error = clGetKernelWorkGroupInfo(obj.first, obj.second, paramName,
                         size, infoRet, sizeRet);
@@ -993,13 +1060,19 @@ namespace impl
     }
     
 #if __CLPP_CL_ABI_VERSION >= 102U
+    struct kernel_arg
+    {
+        cl_kernel kernel;
+        cl_uint arg;
+    };
+    
     /// internal function to get info about object (defined only if OpenCL ABI >= 1.2)
     template<>
-    inline void getInfoInternal<std::pair<cl_kernel, cl_uint>, cl_kernel_arg_info, KERNOPT_ARG>(
-                std::pair<cl_kernel, cl_uint> obj, cl_kernel_arg_info paramName, size_t size,
-                void* infoRet, size_t* sizeRet)
+    inline void getInfoInternal<kernel_arg, cl_kernel_arg_info_wrapper,
+            KERNOPT_ARG>(kernel_arg obj, cl_kernel_arg_info_wrapper::InfoType paramName,
+            size_t size, void* infoRet, size_t* sizeRet)
     {
-        const cl_int error = clGetKernelArgInfo(obj.first, obj.second, paramName,
+        const cl_int error = clGetKernelArgInfo(obj.kernel, obj.arg, paramName,
                         size, infoRet, sizeRet);
         if (error != CL_SUCCESS)
             throw Error(error, "clGetKernelArgInfo");
@@ -1023,9 +1096,9 @@ namespace impl
     
     /// internal function to get info about object (defined only if OpenCL ABI >= 2.1)
     template<>
-    inline void getInfoInternal<SubGroupObj, cl_kernel_sub_group_info, KERNOPT_SUBGROUP>(
-                SubGroupObj obj, cl_kernel_sub_group_info paramName, size_t size,
-                void* infoRet, size_t* sizeRet)
+    inline void getInfoInternal<SubGroupObj, cl_kernel_sub_group_info_wrapper, KERNOPT_SUBGROUP>(
+                SubGroupObj obj, cl_kernel_sub_group_info_wrapper::InfoType paramName,
+                size_t size, void* infoRet, size_t* sizeRet)
     {
         const cl_int error = clGetKernelSubGroupInfo(obj.kernel, obj.device, paramName,
                         obj.inputSize, obj.input, size, infoRet, sizeRet);
@@ -1036,9 +1109,9 @@ namespace impl
     
     /// internal function to get info about object
     template<>
-    inline void getInfoInternal<cl_event, cl_event_info, EVOPT_EVENT>(
-                cl_event obj, cl_event_info paramName, size_t size, void* infoRet,
-                size_t* sizeRet)
+    inline void getInfoInternal<cl_event, cl_event_info_wrapper, EVOPT_EVENT>(
+                cl_event obj, cl_event_info_wrapper::InfoType paramName, size_t size,
+                void* infoRet, size_t* sizeRet)
     {
         const cl_int error = clGetEventInfo(obj, paramName, size, infoRet, sizeRet);
         if (error != CL_SUCCESS)
@@ -1047,8 +1120,8 @@ namespace impl
     
     /// internal function to get info about object
     template<>
-    inline void getInfoInternal<cl_event, cl_profiling_info, EVOPT_PROFILING>(
-                cl_event obj, cl_profiling_info paramName, size_t size,
+    inline void getInfoInternal<cl_event, cl_profiling_info_wrapper, EVOPT_PROFILING>(
+                cl_event obj, cl_profiling_info_wrapper::InfoType paramName, size_t size,
                 void* infoRet, size_t* sizeRet)
     {
         const cl_int error = clGetEventProfilingInfo(obj, paramName, size,
@@ -1059,8 +1132,9 @@ namespace impl
     
     /// internal function to get info about object
     template<>
-    inline void getInfoInternal<cl_command_queue, cl_command_queue_info, CMDQOPT_CMDQUEUE>(
-                cl_command_queue obj, cl_command_queue_info paramName, size_t size,
+    inline void getInfoInternal<cl_command_queue, cl_command_queue_info_wrapper,
+                CMDQOPT_CMDQUEUE>(cl_command_queue obj,
+                cl_command_queue_info_wrapper::InfoType paramName, size_t size,
                 void* infoRet, size_t* sizeRet)
     {
         const cl_int error = clGetCommandQueueInfo(obj, paramName, size, infoRet, sizeRet);
@@ -1071,9 +1145,10 @@ namespace impl
 #ifdef __CLPP_CL_GL
     /// internal function to get info about object (defined only if __CLPP_CL_GL)
     template<>
-    inline void getInfoInternal<const cl_context_properties *, cl_gl_context_info,
+    inline void getInfoInternal<const cl_context_properties *, cl_gl_context_info_wrapper,
                 GLCOPT_GLCTX>(const cl_context_properties* props,
-                cl_gl_context_info paramName, size_t size, void* infoRet, size_t* sizeRet)
+                cl_gl_context_info_wrapper::InfoType paramName, size_t size, void* infoRet,
+                size_t* sizeRet)
     {
 #   if __CLPP_CL_ABI_VERSION >= 102U
         /* slow but sure */
@@ -1110,7 +1185,7 @@ namespace impl
     struct GetInfoHelper
     {
         /// get info
-        static T getInfo(CLType object, InfoType paramName)
+        static T getInfo(CLType object, typename InfoType::InfoType paramName)
         {
             T value;
             getInfoInternal<CLType, InfoType, Option>(object, paramName, sizeof(T),
@@ -1119,14 +1194,15 @@ namespace impl
         }
         
         /// get info
-        static void getInfo(CLType object, InfoType paramName, T& value)
+        static void getInfo(CLType object, typename InfoType::InfoType paramName, T& value)
         {
             getInfoInternal<CLType, InfoType, Option>(object, paramName, sizeof(T),
                         &value, NULL);
         }
         
         /// get info as vector
-        static std::vector<T> getInfoVector(CLType object, InfoType paramName)
+        static std::vector<T> getInfoVector(CLType object,
+                            typename InfoType::InfoType paramName)
         {
             size_t size;
             getInfoInternal<CLType, InfoType, Option>(object, paramName, 0, NULL, &size);
@@ -1146,7 +1222,7 @@ namespace impl
         typedef typename T::cl_type cl_type;
         
         /// get info
-        static T getInfo(CLType object, InfoType paramName)
+        static T getInfo(CLType object, typename InfoType::InfoType paramName)
         {
             T value;
             getInfoInternal<CLType, InfoType, Option>(object, paramName, sizeof(T),
@@ -1156,7 +1232,7 @@ namespace impl
         }
         
         /// get info
-        static void getInfo(CLType object, InfoType paramName, T& value)
+        static void getInfo(CLType object, typename InfoType::InfoType paramName, T& value)
         {
             T tmpValue;
             getInfoInternal<CLType, InfoType, Option>(object, paramName, sizeof(T),
@@ -1166,7 +1242,8 @@ namespace impl
         }
         
         /// get info as vector
-        static std::vector<T> getInfoVector(CLType object, InfoType paramName)
+        static std::vector<T> getInfoVector(CLType object,
+                            typename InfoType::InfoType paramName)
         {
             size_t outNum;
             getInfoInternal<CLType, InfoType, Option>(object, paramName, 0, NULL, &outNum);
@@ -1186,7 +1263,7 @@ namespace impl
     struct GetInfoHelper<CLType, InfoType, std::string, Option>
     {
         /// get info
-        static std::string getInfo(CLType object, InfoType paramName)
+        static std::string getInfo(CLType object, typename InfoType::InfoType paramName)
         {
             size_t infoSize;
             getInfoInternal<CLType, InfoType, Option>(object, paramName, 0, NULL, &infoSize);
@@ -1197,7 +1274,8 @@ namespace impl
         }
         
         /// get info
-        static void getInfo(CLType object, InfoType paramName, std::string& value)
+        static void getInfo(CLType object, typename InfoType::InfoType paramName,
+                            std::string& value)
         { value = getInfo(object, paramName); }
     };
     
@@ -1206,7 +1284,7 @@ namespace impl
     struct GetInfoHelper<CLType, InfoType, bool, Option>
     {
         /// get info
-        static bool getInfo(CLType object, InfoType paramName)
+        static bool getInfo(CLType object, typename InfoType::InfoType paramName)
         {
             cl_bool value;
             getInfoInternal<CLType, InfoType, Option>(object, paramName, sizeof(cl_bool),
@@ -1215,7 +1293,7 @@ namespace impl
         }
         
         /// get info
-        static void getInfo(CLType object, InfoType paramName, bool& value)
+        static void getInfo(CLType object, typename InfoType::InfoType paramName, bool& value)
         { value = getInfo(object, paramName); }
     };
 }
@@ -1333,25 +1411,25 @@ public:
     /// get device info
     template<typename T>
     T getInfo(cl_device_info paramName) const
-    { return impl::GetInfoHelper<cl_device_id, cl_device_info, T>::getInfo(
+    { return impl::GetInfoHelper<cl_device_id, impl::cl_device_info_wrapper, T>::getInfo(
                 device, paramName); }
     
     /// get device info
     template<typename T>
     void getInfo(cl_device_info paramName, T& value) const
-    { impl::GetInfoHelper<cl_device_id, cl_device_info, T>::getInfo(
+    { impl::GetInfoHelper<cl_device_id, impl::cl_device_info_wrapper, T>::getInfo(
                 device, paramName, value); }
     
     /// get device info
     std::string getInfoString(cl_device_info paramName) const
-    { return impl::GetInfoHelper<cl_device_id, cl_device_info, std::string>::getInfo(
-                device, paramName); }
+    { return impl::GetInfoHelper<cl_device_id, impl::cl_device_info_wrapper,
+                std::string>::getInfo(device, paramName); }
     
     /// get device info as vector
     template<typename T>
     std::vector<T> getInfoVector(cl_device_info paramName) const
-    { return impl::GetInfoHelper<cl_device_id, cl_device_info, T>::getInfoVector(
-                device, paramName); }
+    { return impl::GetInfoHelper<cl_device_id, impl::cl_device_info_wrapper, T>::
+                getInfoVector(device, paramName); }
     
     /// get device type
     cl_device_type getType() const
@@ -2076,25 +2154,25 @@ public:
     /// get platform info
     template<typename T>
     T getInfo(cl_platform_info paramName) const
-    { return impl::GetInfoHelper<cl_platform_id, cl_platform_info, T>::getInfo(
-                platform, paramName); }
+    { return impl::GetInfoHelper<cl_platform_id, impl::cl_platform_info_wrapper, T>::
+                getInfo(platform, paramName); }
     
     /// get platform info
     template<typename T>
     void getInfo(cl_platform_info paramName, T& value) const
-    { impl::GetInfoHelper<cl_platform_id, cl_platform_info, T>::getInfo(
+    { impl::GetInfoHelper<cl_platform_id, impl::cl_platform_info_wrapper, T>::getInfo(
                 platform, paramName, value); }
     
     /// get platform info
     std::string getInfoString(cl_platform_info paramName) const
-    { return impl::GetInfoHelper<cl_platform_id, cl_platform_info, std::string>::getInfo(
-                platform, paramName); }
+    { return impl::GetInfoHelper<cl_platform_id, impl::cl_platform_info_wrapper,
+                    std::string>::getInfo(platform, paramName); }
     
     /// get platform info as vector
     template<typename T>
     std::vector<T> getInfoVector(cl_platform_info paramName) const
-    { return impl::GetInfoHelper<cl_platform_id, cl_platform_info, T>::getInfoVector(
-                platform, paramName); }
+    { return impl::GetInfoHelper<cl_platform_id, impl::cl_platform_info_wrapper, T>::
+                getInfoVector(platform, paramName); }
     
     /// get platform name
     std::string getName() const
@@ -2158,9 +2236,6 @@ public:
     /// get custom devices from platform (defined only if OpenCL >= 1.2)
     std::vector<Device> getCustomDevices() const
     { return getDevices(CL_DEVICE_TYPE_CUSTOM); }
-    /// get extension function address
-    void* getExtensionFunctionAddress(const char* funcname) const
-    { return clGetExtensionFunctionAddressForPlatform(platform, funcname); }
 #endif
     
 #if __CLPP_CL_ABI_VERSION >= 102U
@@ -2498,25 +2573,25 @@ public:
     /// get context info
     template<typename T>
     T getInfo(cl_context_info paramName) const
-    { return impl::GetInfoHelper<cl_context, cl_context_info, T>::getInfo(
+    { return impl::GetInfoHelper<cl_context, impl::cl_context_info_wrapper, T>::getInfo(
                 context, paramName); }
     
     /// get context info
     template<typename T>
     void getInfo(cl_context_info paramName, T& value) const
-    { impl::GetInfoHelper<cl_context, cl_context_info, T>::getInfo(
+    { impl::GetInfoHelper<cl_context, impl::cl_context_info_wrapper, T>::getInfo(
                 context, paramName, value); }
     
     /// get context info
     std::string getInfoString(cl_context_info paramName) const
-    { return impl::GetInfoHelper<cl_context, cl_context_info, std::string>::getInfo(
-                context, paramName); }
+    { return impl::GetInfoHelper<cl_context, impl::cl_context_info_wrapper, std::string>::
+                getInfo(context, paramName); }
     
     /// get context info as vector
     template<typename T>
     std::vector<T> getInfoVector(cl_context_info paramName) const
-    { return impl::GetInfoHelper<cl_context, cl_context_info, T>::getInfoVector(
-                context, paramName); }
+    { return impl::GetInfoHelper<cl_context, impl::cl_context_info_wrapper, T>::
+                getInfoVector(context, paramName); }
     
     /// returns reference count for this context
     cl_uint refCount() const
@@ -2721,22 +2796,25 @@ public:
     /// get memory info
     template<typename T>
     T getInfo(cl_mem_info paramName) const
-    { return impl::GetInfoHelper<cl_mem, cl_mem_info, T>::getInfo(memory, paramName); }
+    { return impl::GetInfoHelper<cl_mem, impl::cl_mem_info_wrapper, T>::getInfo(
+            memory, paramName); }
     
     /// get memory info
     template<typename T>
     void getInfo(cl_mem_info paramName, T& value) const
-    { impl::GetInfoHelper<cl_mem, cl_mem_info, T>::getInfo(memory, paramName, value); }
+    { impl::GetInfoHelper<cl_mem, impl::cl_mem_info_wrapper, T>::getInfo(
+                memory, paramName, value); }
     
     /// get memory info
     std::string getInfoString(cl_mem_info paramName) const
-    { return impl::GetInfoHelper<cl_mem, cl_mem_info, std::string>::getInfo(
+    { return impl::GetInfoHelper<cl_mem, impl::cl_mem_info_wrapper, std::string>::getInfo(
                 memory, paramName); }
     
     /// get memory info as vector
     template<typename T>
     std::vector<T> getInfoVector(cl_mem_info paramName) const
-    { return impl::GetInfoHelper<cl_mem, cl_mem_info, T>::getInfoVector(memory, paramName); }
+    { return impl::GetInfoHelper<cl_mem, impl::cl_mem_info_wrapper, T>::getInfoVector(
+                memory, paramName); }
     
     /// get memory type
     cl_mem_object_type getType() const
@@ -3049,25 +3127,25 @@ public:
     /// get pipe info
     template<typename T>
     T getPipeInfo(cl_pipe_info paramName) const
-    { return impl::GetInfoHelper<cl_mem, cl_pipe_info, T, impl::MEMOPT_PIPE>::getInfo(
-                memory, paramName); }
+    { return impl::GetInfoHelper<cl_mem, impl::cl_pipe_info_wrapper, T,
+                impl::MEMOPT_PIPE>::getInfo(memory, paramName); }
     
     /// get pipe info
     template<typename T>
     void getPipeInfo(cl_pipe_info paramName, T& value) const
-    { impl::GetInfoHelper<cl_mem, cl_pipe_info, T, impl::MEMOPT_PIPE>::getInfo(
-                memory, paramName, value); }
+    { impl::GetInfoHelper<cl_mem, impl::cl_pipe_info_wrapper, T, impl::MEMOPT_PIPE>::
+                getInfo(memory, paramName, value); }
     
     /// get pipe info
     std::string getPipeInfo(cl_pipe_info paramName) const
-    { return impl::GetInfoHelper<cl_mem, cl_pipe_info, std::string,
+    { return impl::GetInfoHelper<cl_mem, impl::cl_pipe_info_wrapper, std::string,
                 impl::MEMOPT_PIPE>::getInfo(memory, paramName); }
     
     /// get pipe info as vector
     template<typename T>
     std::vector<T> getPipeInfoVector(cl_pipe_info paramName) const
-    { return impl::GetInfoHelper<cl_mem, cl_pipe_info, T, impl::MEMOPT_PIPE>::getInfoVector(
-                memory, paramName); }
+    { return impl::GetInfoHelper<cl_mem, impl::cl_pipe_info_wrapper, T,
+                impl::MEMOPT_PIPE>::getInfoVector( memory, paramName); }
     
     /// get pipe packet size
     cl_uint getPacketSize() const
@@ -3187,25 +3265,25 @@ public:
     /// get image info
     template<typename T>
     T getImageInfo(cl_image_info paramName) const
-    { return impl::GetInfoHelper<cl_mem, cl_image_info, T, impl::MEMOPT_IMAGE>::getInfo(
-                memory, paramName); }
+    { return impl::GetInfoHelper<cl_mem, impl::cl_image_info_wrapper, T,
+                impl::MEMOPT_IMAGE>::getInfo(memory, paramName); }
     
     /// get image info
     template<typename T>
     void getImageInfo(cl_image_info paramName, T& value) const
-    { impl::GetInfoHelper<cl_mem, cl_image_info, T, impl::MEMOPT_IMAGE>::getInfo(
-                memory, paramName, value); }
+    { impl::GetInfoHelper<cl_mem, impl::cl_image_info_wrapper, T, impl::MEMOPT_IMAGE>::
+                getInfo(memory, paramName, value); }
     
     /// get image info
     std::string getImageInfo(cl_image_info paramName) const
-    { return impl::GetInfoHelper<cl_mem, cl_image_info, std::string, impl::MEMOPT_IMAGE>::
-                getInfo(memory, paramName); }
+    { return impl::GetInfoHelper<cl_mem, impl::cl_image_info_wrapper, std::string,
+                impl::MEMOPT_IMAGE>::getInfo(memory, paramName); }
     
     /// get image info as vector
     template<typename T>
     std::vector<T> getImageInfoVector(cl_image_info paramName) const
-    { return impl::GetInfoHelper<cl_mem, cl_image_info, T, impl::MEMOPT_IMAGE>::
-                getInfoVector(memory, paramName); }
+    { return impl::GetInfoHelper<cl_mem, impl::cl_image_info_wrapper, T,
+                impl::MEMOPT_IMAGE>::getInfoVector(memory, paramName); }
     
     /// get image format
     cl_image_format getFormat() const
@@ -3719,25 +3797,25 @@ public:
     /// get gl_texture info
     template<typename T>
     T getGLTextureInfo(cl_gl_texture_info paramName) const
-    { return impl::GetInfoHelper<cl_mem, cl_gl_texture_info, T,
+    { return impl::GetInfoHelper<cl_mem, impl::cl_gl_texture_info_wrapper, T,
                 impl::MEMOPT_TEXTUREGL>::getInfo(memory, paramName); }
     
     /// get gl_texture info
     template<typename T>
     void getGLTextureInfo(cl_gl_texture_info paramName, T& value) const
-    { impl::GetInfoHelper<cl_mem, cl_gl_texture_info, T, impl::MEMOPT_TEXTUREGL>::getInfo(
-                memory, paramName, value); }
+    { impl::GetInfoHelper<cl_mem, impl::cl_gl_texture_info_wrapper, T,
+                impl::MEMOPT_TEXTUREGL>::getInfo(memory, paramName, value); }
     
     /// get gl_texture info
     std::string getGLTextureInfoString(cl_gl_texture_info paramName) const
-    { return impl::GetInfoHelper<cl_mem, cl_gl_texture_info, std::string,
+    { return impl::GetInfoHelper<cl_mem, impl::cl_gl_texture_info_wrapper, std::string,
                 impl::MEMOPT_TEXTUREGL>::getInfo( memory, paramName); }
     
     /// get gl_texture info as vector
     template<typename T>
     std::vector<T> getGLTextureInfoVector(cl_gl_texture_info paramName) const
-    { return impl::GetInfoHelper<cl_mem, cl_gl_texture_info, T, impl::MEMOPT_TEXTUREGL>::
-                getInfoVector(memory, paramName); }
+    { return impl::GetInfoHelper<cl_mem, impl::cl_gl_texture_info_wrapper, T,
+                impl::MEMOPT_TEXTUREGL>::getInfoVector(memory, paramName); }
     
     /// get GL texture target
     cl_GLenum getGLTextureTarget() const
@@ -4034,25 +4112,25 @@ public:
     /// get sampler info
     template<typename T>
     T getInfo(cl_sampler_info paramName) const
-    { return impl::GetInfoHelper<cl_sampler, cl_sampler_info, T>::getInfo(
+    { return impl::GetInfoHelper<cl_sampler, impl::cl_sampler_info_wrapper, T>::getInfo(
                 sampler, paramName); }
     
     /// get sampler info
     template<typename T>
     void getInfo(cl_sampler_info paramName, T& value) const
-    { impl::GetInfoHelper<cl_sampler, cl_sampler_info, T>::getInfo(
+    { impl::GetInfoHelper<cl_sampler, impl::cl_sampler_info_wrapper, T>::getInfo(
                 sampler, paramName, value); }
     
     /// get sampler info
     std::string getInfoString(cl_sampler_info paramName) const
-    { return impl::GetInfoHelper<cl_sampler, cl_sampler_info, std::string>::getInfo(
-                sampler, paramName); }
+    { return impl::GetInfoHelper<cl_sampler, impl::cl_sampler_info_wrapper, std::string>::
+                getInfo(sampler, paramName); }
     
     /// get sampler info as vector
     template<typename T>
     std::vector<T> getInfoVector(cl_sampler_info paramName) const
-    { return impl::GetInfoHelper<cl_sampler, cl_sampler_info, T>::getInfoVector(
-                sampler, paramName); }
+    { return impl::GetInfoHelper<cl_sampler, impl::cl_sampler_info_wrapper, T>::
+                getInfoVector(sampler, paramName); }
     
     /// get context
     Context getContext() const
@@ -4374,25 +4452,25 @@ public:
     /// get program info
     template<typename T>
     T getInfo(cl_program_info paramName) const
-    { return impl::GetInfoHelper<cl_program, cl_program_info, T>::getInfo(
+    { return impl::GetInfoHelper<cl_program, impl::cl_program_info_wrapper, T>::getInfo(
                 program, paramName); }
     
     /// get program info
     template<typename T>
     void getInfo(cl_program_info paramName, T& value) const
-    { impl::GetInfoHelper<cl_program, cl_program_info, T>::getInfo(
+    { impl::GetInfoHelper<cl_program, impl::cl_program_info_wrapper, T>::getInfo(
                 program, paramName, value); }
     
     /// get program info
     std::string getInfoString(cl_program_info paramName) const
-    { return impl::GetInfoHelper<cl_program, cl_program_info, std::string>::getInfo(
-                program, paramName); }
+    { return impl::GetInfoHelper<cl_program, impl::cl_program_info_wrapper, std::string>::
+                getInfo(program, paramName); }
     
     /// get program info as vector
     template<typename T>
     std::vector<T> getInfoVector(cl_program_info paramName) const
-    { return impl::GetInfoHelper<cl_program, cl_program_info, T>::getInfoVector(
-                program, paramName); }
+    { return impl::GetInfoHelper<cl_program, impl::cl_program_info_wrapper, T>::
+                getInfoVector(program, paramName); }
     
     /// get context
     Context getContext() const
@@ -4426,9 +4504,9 @@ public:
             out[i].resize(sizes[i]);
             pointers[i] = (sizes[i]!=0)? &out[i][0] : NULL;
         }
-        impl::getInfoInternal<cl_program, cl_program_info, impl::PROGOPT_PROGRAM>(
-                    program, CL_PROGRAM_BINARIES, sizeof(unsigned char*)*numDevices,
-                    &pointers[0], NULL);
+        impl::getInfoInternal<cl_program, impl::cl_program_info_wrapper,
+                    impl::PROGOPT_PROGRAM>(program, CL_PROGRAM_BINARIES,
+                    sizeof(unsigned char*)*numDevices, &pointers[0], NULL);
         return out;
     }
     /// get binaries (warning: always free data pointers!)
@@ -4446,9 +4524,9 @@ public:
                     tmpOut[i] = new unsigned char[sizes[i]];
                 else
                     tmpOut[i] = NULL;
-            impl::getInfoInternal<cl_program, cl_program_info, impl::PROGOPT_PROGRAM>(
-                    program, CL_PROGRAM_BINARIES, sizeof(unsigned char*)*numDevices,
-                    &tmpOut[0], NULL);
+            impl::getInfoInternal<cl_program, impl::cl_program_info_wrapper,
+                    impl::PROGOPT_PROGRAM>(program, CL_PROGRAM_BINARIES,
+                            sizeof(unsigned char*)*numDevices, &tmpOut[0], NULL);
             out = tmpOut;
         }
         catch(...)
@@ -4461,8 +4539,9 @@ public:
     
     /// get binaries to pointers allocated by caller
     void getBinariesToPtrs(const std::vector<unsigned char*>& out) const
-    { impl::getInfoInternal<cl_program, cl_program_info, impl::PROGOPT_PROGRAM>(program,
-                CL_PROGRAM_BINARIES, sizeof(unsigned char*)*out.size(),
+    { impl::getInfoInternal<cl_program, impl::cl_program_info_wrapper,
+                impl::PROGOPT_PROGRAM>(program, CL_PROGRAM_BINARIES,
+                sizeof(unsigned char*)*out.size(),
                 const_cast<unsigned char**>(&out[0]), NULL); }
     
 #if __CLPP_CL_VERSION >= 102U
@@ -4498,29 +4577,30 @@ public:
     /// get program build info
     template<typename T>
     T getBuildInfo(const Device& device, cl_program_build_info paramName) const
-    { return impl::GetInfoHelper<std::pair<cl_program, cl_device_id>, cl_program_build_info, T,
-                impl::PROGOPT_BUILD>::getInfo(std::make_pair(program, device()), paramName); }
+    { return impl::GetInfoHelper<std::pair<cl_program, cl_device_id>,
+                impl::cl_program_build_info_wrapper, T, impl::PROGOPT_BUILD>::
+                getInfo(std::make_pair(program, device()), paramName); }
     
     /// get program build info
     template<typename T>
     void getBuildInfo(const Device& device, cl_program_build_info paramName, T& value) const
-    { impl::GetInfoHelper<std::pair<cl_program, cl_device_id>, cl_program_build_info, T,
-                impl::PROGOPT_BUILD>::getInfo(std::make_pair(program, device()),
-                        paramName, value); }
+    { impl::GetInfoHelper<std::pair<cl_program, cl_device_id>,
+                impl::cl_program_build_info_wrapper, T, impl::PROGOPT_BUILD>::
+                getInfo(std::make_pair(program, device()), paramName, value); }
     
     /// get program build info
     std::string getBuildInfoString(const Device& device, cl_program_build_info paramName) const
-    { return impl::GetInfoHelper<std::pair<cl_program, cl_device_id>, cl_program_build_info,
-                std::string, impl::PROGOPT_BUILD>::getInfo(std::make_pair(program, device()),
-                        paramName); }
+    { return impl::GetInfoHelper<std::pair<cl_program, cl_device_id>,
+                impl::cl_program_build_info_wrapper, std::string, impl::PROGOPT_BUILD>::
+                getInfo(std::make_pair(program, device()), paramName); }
     
     /// get program build info as vector
     template<typename T>
     std::vector<T> getBuildInfoVector(const Device& device,
                 cl_program_build_info paramName) const
-    { return impl::GetInfoHelper<std::pair<cl_program, cl_device_id>, cl_program_build_info, T,
-                impl::PROGOPT_BUILD>::getInfoVector(std::make_pair(program, device()),
-                        paramName); }
+    { return impl::GetInfoHelper<std::pair<cl_program, cl_device_id>,
+                impl::cl_program_build_info_wrapper, T, impl::PROGOPT_BUILD>::
+                getInfoVector(std::make_pair(program, device()), paramName); }
     
     /// get build status
     cl_build_status getBuildStatus(const Device& device) const
@@ -4867,25 +4947,25 @@ public:
     /// get kernel info
     template<typename T>
     T getInfo(cl_kernel_info paramName) const
-    { return impl::GetInfoHelper<cl_kernel, cl_kernel_info, T>::getInfo(
+    { return impl::GetInfoHelper<cl_kernel, impl::cl_kernel_info_wrapper, T>::getInfo(
                 kernel, paramName); }
     
     /// get kernel info
     template<typename T>
     void getInfo(cl_kernel_info paramName, T& value) const
-    { impl::GetInfoHelper<cl_kernel, cl_kernel_info, T>::getInfo(
+    { impl::GetInfoHelper<cl_kernel, impl::cl_kernel_info_wrapper, T>::getInfo(
                 kernel, paramName, value); }
     
     /// get kernel info
     std::string getInfoString(cl_kernel_info paramName) const
-    { return impl::GetInfoHelper<cl_kernel, cl_kernel_info, std::string>::getInfo(
-                kernel, paramName); }
+    { return impl::GetInfoHelper<cl_kernel, impl::cl_kernel_info_wrapper, std::string>::
+                getInfo(kernel, paramName); }
     
     /// get kernel info as vector
     template<typename T>
     std::vector<T> getInfoVector(cl_kernel_info paramName) const
-    { return impl::GetInfoHelper<cl_kernel, cl_kernel_info, T>::getInfoVector(
-                kernel, paramName); }
+    { return impl::GetInfoHelper<cl_kernel, impl::cl_kernel_info_wrapper, T>::
+                getInfoVector(kernel, paramName); }
     
     /// get function name
     std::string getFunctionName() const
@@ -4921,31 +5001,32 @@ public:
     template<typename T>
     T getWorkGroupInfo(const Device& device, cl_kernel_work_group_info paramName) const
     { return impl::GetInfoHelper<std::pair<cl_kernel, cl_device_id>,
-                cl_kernel_work_group_info, T, impl::KERNOPT_WORKGROUP>::getInfo(
-                        std::make_pair(kernel, device()), paramName); }
+                impl::cl_kernel_work_group_info_wrapper, T, impl::KERNOPT_WORKGROUP>::
+                        getInfo(std::make_pair(kernel, device()), paramName); }
     
     /// get kernel work group info
     template<typename T>
     void getWorkGroupInfo(const Device& device,
                 cl_kernel_work_group_info paramName, T& value) const
-    { impl::GetInfoHelper<std::pair<cl_kernel, cl_device_id>, cl_kernel_work_group_info, T,
-                impl::KERNOPT_WORKGROUP>::getInfo(std::make_pair(kernel, device()),
-                        paramName, value); }
+    { impl::GetInfoHelper<std::pair<cl_kernel, cl_device_id>,
+                impl::cl_kernel_work_group_info_wrapper, T, impl::KERNOPT_WORKGROUP>::
+                getInfo(std::make_pair(kernel, device()), paramName, value); }
     
     /// get kernel work group info
     std::string getWorkGroupInfoString(const Device& device,
                 cl_kernel_work_group_info paramName) const
-    { return impl::GetInfoHelper<std::pair<cl_kernel, cl_device_id>, cl_kernel_work_group_info,
-                std::string, impl::KERNOPT_WORKGROUP>::getInfo(std::make_pair(kernel, device()),
-                        paramName); }
+    { return impl::GetInfoHelper<std::pair<cl_kernel, cl_device_id>,
+                impl::cl_kernel_work_group_info_wrapper, std::string,
+                impl::KERNOPT_WORKGROUP>::getInfo(std::make_pair(kernel, device()),
+                                        paramName); }
     
     /// get kernel work group info as vector
     template<typename T>
     std::vector<T> getWorkGroupInfoVector(const Device& device,
                 cl_kernel_work_group_info paramName) const
     { return impl::GetInfoHelper<std::pair<cl_kernel, cl_device_id>,
-                cl_kernel_work_group_info, T, impl::KERNOPT_WORKGROUP>::getInfoVector(
-                        std::make_pair(kernel, device()), paramName); }
+                impl::cl_kernel_work_group_info_wrapper, T, impl::KERNOPT_WORKGROUP>::
+                getInfoVector(std::make_pair(kernel, device()), paramName); }
     
 #if __CLPP_CL_VERSION >= 102U
     /// get global work size (defined only if OpenCL >= 1.2)
@@ -4978,28 +5059,29 @@ public:
     /// get kernel arg info (defined only if OpenCL >= 1.2)
     template<typename T>
     T getArgInfo(cl_uint argIdx, cl_kernel_arg_info paramName) const
-    { return impl::GetInfoHelper<std::pair<cl_kernel, cl_uint>, cl_kernel_arg_info, T,
-                impl::KERNOPT_ARG>::getInfo(std::make_pair(kernel, argIdx), paramName); }
+    { return impl::GetInfoHelper<impl::kernel_arg,
+                impl::cl_kernel_arg_info_wrapper, T, impl::KERNOPT_ARG>::
+                getInfo(impl::kernel_arg{kernel, argIdx}, paramName); }
     
     /// get kernel arg info (defined only if OpenCL >= 1.2)
     template<typename T>
     void getArgInfo(cl_uint argIdx, cl_kernel_arg_info paramName, T& value) const
-    { impl::GetInfoHelper<std::pair<cl_kernel, cl_uint>, cl_kernel_arg_info, T,
-                impl::KERNOPT_ARG>::getInfo(std::make_pair(kernel, argIdx),
+    { impl::GetInfoHelper<impl::kernel_arg, impl::cl_kernel_arg_info_wrapper,
+                T, impl::KERNOPT_ARG>::getInfo(impl::kernel_arg{kernel, argIdx},
                         paramName, value); }
     
     /// get kernel arg info (defined only if OpenCL >= 1.2)
     std::string getArgInfoString(cl_uint argIdx, cl_kernel_arg_info paramName) const
-    { return impl::GetInfoHelper<std::pair<cl_kernel, cl_uint>, cl_kernel_arg_info,
-                std::string, impl::KERNOPT_ARG>::getInfo(std::make_pair(kernel, argIdx),
-                        paramName); }
+    { return impl::GetInfoHelper<impl::kernel_arg,
+                impl::cl_kernel_arg_info_wrapper, std::string, impl::KERNOPT_ARG>::
+                getInfo(impl::kernel_arg{kernel, argIdx}, paramName); }
     
     /// get kernel arg info as vector (defined only if OpenCL >= 1.2)
     template<typename T>
     std::vector<T> getArgInfoVector(cl_uint argIdx, cl_kernel_arg_info paramName) const
-    { return impl::GetInfoHelper<std::pair<cl_kernel, cl_uint>, cl_kernel_arg_info, T,
-                impl::KERNOPT_ARG>::getInfoVector(std::make_pair(kernel, argIdx),
-                        paramName); }
+    { return impl::GetInfoHelper<impl::kernel_arg,
+                impl::cl_kernel_arg_info_wrapper, T, impl::KERNOPT_ARG>::
+                getInfoVector(impl::kernel_arg{kernel, argIdx}, paramName); }
     
     /// get argument address qualifier (defined only if OpenCL >= 1.2)
     cl_kernel_arg_address_qualifier getArgAddressQualifier(cl_uint argIdx) const
@@ -5029,15 +5111,15 @@ public:
     template<typename T>
     T getSubGroupInfo(cl_device_id device, size_t inputSize, const void* input,
                       cl_kernel_arg_info paramName) const
-    { return impl::GetInfoHelper<impl::SubGroupObj, cl_kernel_sub_group_info, T,
-                impl::KERNOPT_SUBGROUP>::getInfo(
+    { return impl::GetInfoHelper<impl::SubGroupObj, impl::cl_kernel_sub_group_info_wrapper,
+                T, impl::KERNOPT_SUBGROUP>::getInfo(
                     impl::SubGroupObj(kernel, device, inputSize, input), paramName); }
     
     /// get kernel subgroup info (defined only if OpenCL >= 2.1)
     template<typename T>
     void getSubGroupInfo(cl_device_id device, size_t inputSize, const void* input,
                     cl_kernel_arg_info paramName, T& value) const
-    { impl::GetInfoHelper<impl::SubGroupObj, cl_kernel_sub_group_info, T,
+    { impl::GetInfoHelper<impl::SubGroupObj, impl::cl_kernel_sub_group_info_wrapper, T,
                 impl::KERNOPT_SUBGROUP>::getInfo(
                         impl::SubGroupObj(kernel, device, inputSize, input),
                         paramName, value); }
@@ -5045,7 +5127,7 @@ public:
     /// get kernel subgroup info (defined only if OpenCL >= 2.1)
     std::string getSubGroupInfoString(cl_device_id device, size_t inputSize,
                         const void* input, cl_kernel_sub_group_info paramName) const
-    { return impl::GetInfoHelper<impl::SubGroupObj, cl_kernel_sub_group_info,
+    { return impl::GetInfoHelper<impl::SubGroupObj, impl::cl_kernel_sub_group_info_wrapper,
                 std::string, impl::KERNOPT_SUBGROUP>::getInfo(
                         impl::SubGroupObj(kernel, device, inputSize, input),
                         paramName); }
@@ -5054,8 +5136,8 @@ public:
     template<typename T>
     std::vector<T> getSubGroupInfoVector(cl_device_id device, size_t inputSize,
                         const void* input, cl_kernel_sub_group_info paramName) const
-    { return impl::GetInfoHelper<impl::SubGroupObj, cl_kernel_sub_group_info, T,
-                impl::KERNOPT_SUBGROUP>::getInfoVector(
+    { return impl::GetInfoHelper<impl::SubGroupObj, impl::cl_kernel_sub_group_info_wrapper,
+                T, impl::KERNOPT_SUBGROUP>::getInfoVector(
                         impl::SubGroupObj(kernel, device, inputSize, input),
                         paramName); }
     
@@ -5825,22 +5907,24 @@ public:
     /// get event info
     template<typename T>
     T getInfo(cl_event_info paramName) const
-    { return impl::GetInfoHelper<cl_event, cl_event_info, T>::getInfo(event, paramName); }
+    { return impl::GetInfoHelper<cl_event, impl::cl_event_info_wrapper, T>::
+                getInfo(event, paramName); }
     
     /// get event info
     template<typename T>
     void getInfo(cl_event_info paramName, T& value) const
-    { impl::GetInfoHelper<cl_event, cl_event_info, T>::getInfo(event, paramName, value); }
+    { impl::GetInfoHelper<cl_event, impl::cl_event_info_wrapper, T>::
+                getInfo(event, paramName, value); }
     
     /// get event info
     std::string getInfoString(cl_event_info paramName) const
-    { return impl::GetInfoHelper<cl_event, cl_event_info, std::string>::getInfo(
-                event, paramName); }
+    { return impl::GetInfoHelper<cl_event, impl::cl_event_info_wrapper, std::string>::
+                getInfo(event, paramName); }
     
     /// get event info as vector
     template<typename T>
     std::vector<T> getInfoVector(cl_event_info paramName) const
-    { return impl::GetInfoHelper<cl_event, cl_event_info, T>::getInfoVector(
+    { return impl::GetInfoHelper<cl_event, impl::cl_event_info_wrapper, T>::getInfoVector(
                 event, paramName); }
     
     /// get command queue for event
@@ -5886,25 +5970,25 @@ public:
     /// get event profiling info
     template<typename T>
     T getProfilingInfo(cl_profiling_info paramName) const
-    { return impl::GetInfoHelper<cl_event, cl_profiling_info, T,
+    { return impl::GetInfoHelper<cl_event, impl::cl_profiling_info_wrapper, T,
                 impl::EVOPT_PROFILING>::getInfo(event, paramName); }
     
     /// get event profiling info
     template<typename T>
     void getProfilingInfo(cl_profiling_info paramName, T& value) const
-    { impl::GetInfoHelper<cl_event, cl_profiling_info, T, impl::EVOPT_PROFILING>::getInfo(
-                event, paramName, value); }
+    { impl::GetInfoHelper<cl_event, impl::cl_profiling_info_wrapper, T,
+                impl::EVOPT_PROFILING>::getInfo(event, paramName, value); }
     
     /// get event profiling info
     std::string getProfilingInfoString(cl_profiling_info paramName) const
-    { return impl::GetInfoHelper<cl_event, cl_profiling_info, std::string,
+    { return impl::GetInfoHelper<cl_event, impl::cl_profiling_info_wrapper, std::string,
                 impl::EVOPT_PROFILING>::getInfo(event, paramName); }
     
     /// get event profiling info as vector
     template<typename T>
     std::vector<T> getProfilingInfoVector(cl_profiling_info paramName) const
-    { return impl::GetInfoHelper<cl_event, cl_profiling_info, T, impl::EVOPT_PROFILING>::
-                getInfoVector(event, paramName); }
+    { return impl::GetInfoHelper<cl_event, impl::cl_profiling_info_wrapper, T,
+                impl::EVOPT_PROFILING>::getInfoVector(event, paramName); }
     
     /// get time when command queued
     cl_ulong getProfilingCommandQueued() const
@@ -6183,24 +6267,24 @@ public:
     /// get command queue info
     template<typename T>
     T getInfo(cl_command_queue_info paramName) const
-    { return impl::GetInfoHelper<cl_command_queue, cl_command_queue_info, T>::getInfo(
-                queue, paramName); }
+    { return impl::GetInfoHelper<cl_command_queue, impl::cl_command_queue_info_wrapper, T>::
+                getInfo(queue, paramName); }
     
     /// get command queue info
     template<typename T>
     void getInfo(cl_command_queue_info paramName, T& value) const
-    { impl::GetInfoHelper<cl_command_queue, cl_command_queue_info, T>::getInfo(
-                queue, paramName, value); }
+    { impl::GetInfoHelper<cl_command_queue, impl::cl_command_queue_info_wrapper, T>::
+                getInfo(queue, paramName, value); }
     
     /// get command queue info
     std::string getInfoString(cl_command_queue_info paramName) const
-    { return impl::GetInfoHelper<cl_command_queue, cl_command_queue_info, std::string>::
-                getInfo(queue, paramName); }
+    { return impl::GetInfoHelper<cl_command_queue, impl::cl_command_queue_info_wrapper,
+                std::string>::getInfo(queue, paramName); }
     
     /// get command queue info as vector
     template<typename T>
     std::vector<T> getInfoVector(cl_command_queue_info paramName) const
-    { return impl::GetInfoHelper<cl_command_queue, cl_command_queue_info, T>::
+    { return impl::GetInfoHelper<cl_command_queue, impl::cl_command_queue_info_wrapper, T>::
                 getInfoVector(queue, paramName); }
     
     /// returns reference count for this command queue
